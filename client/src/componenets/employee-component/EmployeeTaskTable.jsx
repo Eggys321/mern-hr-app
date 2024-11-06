@@ -17,7 +17,7 @@ const EmployeeTaskBoard = () => {
   useEffect(() => {
     const fetchAssignedTasks = async () => {
       try {
-        const response = await axios.get('https://mern-hr-app.onrender.com/api/task/tasks/assigned', {
+        const response = await axios.get('http://localhost:4040/api/task/tasks/assigned', {
           headers: {
             Authorization: `Bearer ${token}`
           }

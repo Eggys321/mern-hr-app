@@ -15,7 +15,7 @@
 .leave-board-section-1-div {
   display: grid;
   grid-template-columns: 252.97px 252.97px 252.97px 252.97px;
-  /* justify-content: space-between; */
+  justify-content: space-between;
   gap: 42px;
 }
 

@@ -61,7 +61,7 @@ export const resetPwdLinkSchema = yup
 
   export const professional = yup.object().shape({
     officeOfEmployment: yup.string().required("Office of Employment is required"),
-    jobTitle: yup.string().required("Job Title is required"),
+    jobTitle: yup.string().oneOf(["Product Designer","Front-end","Back-end","Cyber Security", "Customer Rep", "Data Analyst"], "Employment Status is required"),
     department: yup.string().required("Department is required"),
     employmentStatus: yup.string().oneOf(["on-site",  "remote","hybrid"], "Employment Status is required"),
   });

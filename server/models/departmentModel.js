@@ -6,7 +6,7 @@ const departmentSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-        enum: ["Administration", "Product", "Marketing","Operations"],
+        // enum: ["Administration", "Product", "Marketing","Operations"],
         trim: true,
       },
       manager: {

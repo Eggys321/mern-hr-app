@@ -73,6 +73,7 @@ const userSchema = new Schema({
   jobTitle: {
     type: String,
     trim: true,
+    enum: ["Product Designer","Front-end","Back-end","Cyber Security", "Customer Rep", "Data Analyst"],
     required: [true, "job title is required"],
   },
   department: {
@@ -95,6 +96,12 @@ const userSchema = new Schema({
     trim: true,
     required: [true, "start date is required"],
   },
+  leaves: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "leave",
+    }
+  ],
   password: {
     type: String,
     trim: true,

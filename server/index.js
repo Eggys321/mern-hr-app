@@ -5,7 +5,8 @@ import authRoute from "./routes/authRoute.js";
 import departmentRoute from "./routes/departmentRoutes.js";
 import employeeRoute from "./routes/employeesRoutes.js";
 import taskRoute from "./routes/taskRoute.js";
-import allSchemaCount from "./routes/allSchemaLength.js"
+import allSchemaCount from "./routes/allSchemaLength.js";
+import leaveRoute from "./routes/leaveRoute.js";
 import fileUpload from "express-fileupload"; 
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -26,6 +27,7 @@ app.use("/api/department",departmentRoute);
 app.use("/api/employee",employeeRoute);
 app.use("/api/task",taskRoute);
 app.use("/api",allSchemaCount);
+app.use("/api/leave",leaveRoute)
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.API_KEY,

@@ -1,5 +1,5 @@
 import {createTransport} from "nodemailer";
-import { createWelcomeEmailTemplate,resetPasswordEmailTemplate,sendTaskAssignmentEmail } from "./emailTemplate.js";
+import { createLeaveRequestEmailTemplate, createLeaveStatusUpdateEmailTemplate, createWelcomeEmailTemplate,resetPasswordEmailTemplate,sendTaskAssignmentEmail } from "./emailTemplate.js";
 
 export const sendWelcomeEmail = (options)=>{
 
@@ -30,8 +30,6 @@ export const sendWelcomeEmail = (options)=>{
     })
 
 }
-
-
 export const sendForgotPasswordMail = (options)=>{
 
     const transporter = createTransport({
@@ -96,6 +94,77 @@ export const sendTaskMail = (options)=>{
     })
 
 }
+export const sendLeaveRequestMail = (options)=>{
+
+    const transporter = createTransport({
+        host:process.env.EMAIL_SERVICE,
+        port:process.env.EMAIL_PORT,
+        secure:false,
+        auth:{
+            user:process.env.EMAIL_USERNAME,
+            pass:process.env.EMAIL_PASSWORD,
+        },
+    });
+    const mailOptions = {
+        from:process.env.EMAIL_FROM,
+        to:options.to,
+        subject:"Leave Request!",
+        html: createLeaveRequestEmailTemplate(  options.employeeName, 
+            options.leaveType,
+            options.startDate,
+            options.endDate,
+            options.duration,
+            options.clientUrl
+        ),
+        category: "New Leave Request",
+
+    };
+
+    transporter.sendMail(mailOptions,function(error,info){
+        if(error){
+            console.log(error);
+        }else{
+            console.log("Email sent: " + info.response);
+        }
+    })
+
+}
+
+export const sendLeaveStatusUpdateMail = (options) => {
+    const transporter = createTransport({
+      host: process.env.EMAIL_SERVICE,
+      port: process.env.EMAIL_PORT,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+  
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      to: options.to,
+      subject: `Your Leave Request is ${options.status}`,
+      html: createLeaveStatusUpdateEmailTemplate(
+        options.employeeName,
+        options.leaveType,
+        options.startDate,
+        options.endDate,
+        options.duration,
+        options.status
+      ),
+    };
+  
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log("Failed to send status update email:", error);
+      } else {
+        console.log("Status update email sent successfully: " + info.response);
+      }
+    });
+  };
+  
+
 
 
 

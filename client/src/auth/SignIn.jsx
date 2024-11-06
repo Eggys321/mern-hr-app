@@ -28,14 +28,14 @@ const SignIn = () => {
     resolver: yupResolver(signInSchema),
     defaultValues: {
       email: "oladapomubarak@gmail.com",
-      password: "eggys1234",
+      password: "12345678",
     },
     signInSchema
   });
   async function handleSignIn(data) {
     setIsClicked(true)
     try {
-      const req = await fetch("https://mern-hr-app.onrender.com/api/auth/signin",{
+      const req = await fetch("http://localhost:4040/api/auth/signin",{
         method:"POST",
         headers:{
           "Content-Type":"application/json"

@@ -35,7 +35,7 @@ const Professional = () => {
     const fetchDepartments = async () => {
       try {
         setLoading(true)
-        const response = await axios.get("https://mern-hr-app.onrender.com/api/department/all-departments",{
+        const response = await axios.get("http://localhost:4040/api/department/all-departments",{
           headers:{
             Authorization:`Bearer ${token}`
           }
@@ -76,7 +76,21 @@ const Professional = () => {
                   controlId="exampleForm.ControlInput2"
                 >
                   <Form.Label>Job Title <span className="text-danger">*</span> </Form.Label>
-                  <Form.Control type="text" placeholder="Enter Title"  {...register("jobTitle", { required: true })}/>
+                  <Form.Select
+                    id=""
+                    className="personal-info-wrapper-select"
+                    {...register("jobTitle", { required: true })}
+                  >
+                    <option disabled selected hidden>
+                      Select
+                    </option>
+                    <option value="Front-end">Front-end</option>
+                    <option value="Back-end">Back-end</option>
+                    <option value="Product Designer">Product Designer</option>
+                    <option value="Cyber Security">Cyber Security</option>
+                    <option value="Customer Rep">Customer Rep</option>
+                    <option value="Data Analyst">Data Analyst</option>
+                  </Form.Select>
                   <span className="text-danger fs-6 text-start fw-bold">
                     {" "}
                     {errors.jobTitle?.message}

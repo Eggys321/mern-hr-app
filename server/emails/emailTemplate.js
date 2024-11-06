@@ -118,4 +118,87 @@ export function sendTaskAssignmentEmail(
   `;
 }
 
+export function createLeaveRequestEmailTemplate(
+  employeeName,
+  leaveType,
+  startDate,
+  endDate,
+  duration,
+  clientUrl
+) {
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Request Notification</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: linear-gradient(to right, #3439ca, #00A0DC); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+      <img src="https://res.cloudinary.com/eguono/image/upload/v1728864403/hr-manager/nav-logo_wzlhdy.png" alt="Hr-Manager Logo" style="max-width: 50.3px; max-height: 43.92px; margin-bottom: 20px; border-radius: 10px;">
+      <h1 style="color: white; margin: 0; font-size: 28px;">New Leave Request</h1>
+    </div>
+    <div style="background-color: #ffffff; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+      <p style="font-size: 18px; color: #0077B5;"><strong>Hello Admin,</strong></p>
+      <p>We have received a new leave request from <strong>${employeeName}</strong>. Here are the details:</p>
+      <div style="background-color: #f3f6f8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="font-size: 16px; margin: 0;"><strong>Leave Details:</strong></p>
+        <ul style="padding-left: 20px;">
+          <li><strong>Leave Type:</strong> ${leaveType}</li>
+          <li><strong>Start Date:</strong> ${startDate}</li>
+          <li><strong>End Date:</strong> ${endDate}</li>
+          <li><strong>Duration:</strong> ${duration} days</li>
+        </ul>
+      </div>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${clientUrl}" style="background-color: #0077B5; color: white; padding: 14px 28px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 16px; transition: background-color 0.3s;">Review Leave Request</a>
+      </div>
+      <p>Please log in to the HR Manager portal to view and process this request.</p>
+      <p>Best regards,<br>The Hr-Manager Team</p>
+    </div>
+  </body>
+  </html>
+  `;
+}
 
+export function createLeaveStatusUpdateEmailTemplate(
+  employeeName,
+  leaveType,
+  startDate,
+  endDate,
+  duration,
+  status
+) {
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Status Update</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: linear-gradient(to right, #3439ca, #00A0DC); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+          <img src="https://res.cloudinary.com/eguono/image/upload/v1728864403/hr-manager/nav-logo_wzlhdy.png" alt="Hr-Manager Logo" style="max-width: 50.3px; max-height: 43.92px; margin-bottom: 20px; border-radius: 10px;">
+      <h1 style="color: white; margin: 0; font-size: 28px;">Leave Status Update</h1>
+    </div>
+    <div style="background-color: #ffffff; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+      <p style="font-size: 18px; color: #0077B5;"><strong>Hello ${employeeName},</strong></p>
+      <p>Your leave request has been <strong>${status.toUpperCase()}</strong>.</p>
+      <div style="background-color: #f3f6f8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="font-size: 16px; margin: 0;"><strong>Leave Details:</strong></p>
+        <ul style="padding-left: 20px;">
+          <li><strong>Leave Type:</strong> ${leaveType}</li>
+          <li><strong>Start Date:</strong> ${startDate}</li>
+          <li><strong>End Date:</strong> ${endDate}</li>
+          <li><strong>Duration:</strong> ${duration} days</li>
+        </ul>
+      </div>
+      <p>If you have any questions, please contact your HR department.</p>
+      <p>Best regards,<br>The HR Team</p>
+    </div>
+  </body>
+  </html>
+  `;
+}
