@@ -119,9 +119,9 @@ const TaskTable = () => {
               </th>
             </tr>
           </thead>
-          {data.map((task) => {
+          {data?.map((task) => {
             return (
-              <tbody key={task._id} className="task-table-body">
+              <tbody key={task?._id} className="task-table-body">
                 
                 <tr>
                   {/* <td>

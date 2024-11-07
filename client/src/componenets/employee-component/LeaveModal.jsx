@@ -1,10 +1,33 @@
-import React from "react";
+import React,{useContext, useState} from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
+import AuthContext, { useAuth } from "../../context/AuthContext";
+// import { useState } from "react";
 
 
 const LeaveModal = (props) => {
+  // const {createLeave} = useAuth()
+  const {createLeave} = useContext(AuthContext)
+  const [leaveType, setLeaveType] = useState("select");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [description, setDescription] = useState("");
+
+  const handleLeaveSubmit = async () => {
+    const leaveData = {
+      leaveType,
+      startDate,
+      endDate,
+      description,
+    };
+    await createLeave(leaveData);
+    setLeaveType("select"); 
+    setStartDate("");
+    setEndDate("");
+    setDescription("");
+    props.onHide(); 
+  };
     return (
       <>
         <Modal
@@ -24,13 +47,14 @@ const LeaveModal = (props) => {
               {/* task status */}
               <Form.Group className="mb-3">
                 <Form.Label htmlFor="">Leave Type</Form.Label>
-                <Form.Select id="" className="new-team-wrapper-select">
-                  <option disabled selected>
+                <Form.Select id="" className="new-team-wrapper-select"   value={leaveType}
+              onChange={(e) => setLeaveType(e.target.value)}>
+                  <option value="select" disabled selected>
                     Select
                   </option>
-                  <option>Annual Leave</option>
-                  <option>Sick Leave</option>
-                  <option>Casual Leave</option>
+                  <option value="annual">Annual Leave</option>
+              <option value="sick">Sick Leave</option>
+              <option value="casual">Casual Leave</option>
                 </Form.Select>
               </Form.Group>
              
@@ -44,14 +68,16 @@ const LeaveModal = (props) => {
                     controlId="exampleForm.ControlInput1"
                   >
                     <Form.Label>Start Date</Form.Label>
-                    <Form.Control type="date" placeholder="Select Date" />
+                    <Form.Control type="date" placeholder="Select Date"  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}/>
                   </Form.Group>
                   <Form.Group
                     className="mb-3 col-lg-6 px-0 "
                     controlId="exampleForm.ControlInput1"
                   >
                     <Form.Label>End Date</Form.Label>
-                    <Form.Control type="date" placeholder="Select Date" />
+                    <Form.Control type="date" placeholder="Select Date" value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}/>
                   </Form.Group>
               </div>
                 </div>
@@ -60,7 +86,8 @@ const LeaveModal = (props) => {
               controlId="exampleForm.ControlTextarea1"
             >
               <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" rows={3} />
+              <Form.Control as="textarea" rows={3} value={description}
+              onChange={(e) => setDescription(e.target.value)} />
             </Form.Group>
              
               <div className="d-flex flex-column-reverse flex-md-row justify-content-between w-100">
@@ -69,7 +96,8 @@ const LeaveModal = (props) => {
                 </Button>
                 <Button
                   variant="primary"
-                //   type="submit"
+                  // type="submit"
+                  onClick={handleLeaveSubmit}
                   className="save-and-continue-btn"
                 >
                   Save

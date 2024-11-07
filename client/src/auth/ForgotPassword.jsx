@@ -25,21 +25,6 @@ const ForgotPassword = () => {
   const handleForgotPwd = async (data) => {
     setIsClicked(true)
 
-    // try {
-    //   const response = await axios.post("http://localhost:4040/api/auth/forgotpassword",data);
-    //   console.log(response);
-    //   if(response.data.success){
-    //     toast.success(response.data.message)
-    //   }
-      
-    // } catch (error) {
-    //   console.log(error.data);
-      
-      
-    // }finally{
-    //   setIsClicked(false)
-
-    // }
    try {
     const req = await fetch("https://mern-hr-app.onrender.com/api/auth/forgotpassword",{
       method:"POST",

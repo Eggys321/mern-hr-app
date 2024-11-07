@@ -1,9 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [data,setData] = useState([])
+  const [leave,setLeave] = useState([]);
+  const [data, setData] = useState([]);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const token = localStorage.getItem("hr-token");
@@ -16,24 +18,69 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("hr-token");
   };
 
-  const getCounts = async ()=>{
+  const getCounts = async () => {
     try {
-      const req = await axios.get("https://mern-hr-app.onrender.com/api/count",{
-        headers:{
-          Authorization: `Bearer ${token}`,
+      const req = await axios.get(
+        "https://mern-hr-app.onrender.com/api/count",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      })
+      );
       // const res = await req.json();
       console.log(req.data.eventLenght);
+
+      setData(req.data.eventLenght);
+    } catch (error) {}
+  };
+
+  //  apply for leave ftn
+
+  const createLeave = async (leaveData) => {
+    try {
+      
+      const req = await fetch("https://mern-hr-app.onrender.com/api/leave/apply", {
+        method:"POST",
+        headers: {
+          "Content-Type":"application/json",
+          Authorization: `Bearer ${token}`,
   
-      setData(req.data.eventLenght)
+        },
+        body: JSON.stringify(leaveData),
+      });
+      const res = await req.json()
+      console.log(res);
+      if(!res.success){
+        toast.error(res.errMsg)
+      }
+      if(res.success){
+        toast.success(res.message)
+        getLeaveHistory()
+      }
+      // console.log(token);
+      
+    } catch (error) {
+      console.error("Error applying for leave:", error.response ? error.response.data : error.message);
+
+    }
+  };
+// employee History
+ async function getLeaveHistory (){
+    try {
+      const req = await axios.get("https://mern-hr-app.onrender.com/api/leave/employee/leaves",{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      })
+      console.log(req.data);
+      setLeave(req.data)
+    
       
     } catch (error) {
       
     }
   }
-
- 
 
   useEffect(() => {
     const verifyUser = async () => {
@@ -48,13 +95,13 @@ export const AuthProvider = ({ children }) => {
             }
           );
           console.log(request);
-          
+
           if (request.data.success) {
             setUser(request.data.user);
           }
         } else {
           setUser(null);
-          setIsLoading(false)
+          setIsLoading(false);
         }
       } catch (error) {
         console.log(error);
@@ -66,7 +113,8 @@ export const AuthProvider = ({ children }) => {
       }
     };
     verifyUser();
-    getCounts()
+    getCounts();
+    getLeaveHistory()
 
   }, []);
 
@@ -78,7 +126,9 @@ export const AuthProvider = ({ children }) => {
         user,
         isLoading,
         data,
-        getCounts
+        getCounts,
+        createLeave,
+        leave
       }}
     >
       {children}

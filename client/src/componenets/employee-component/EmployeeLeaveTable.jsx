@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Table from "react-bootstrap/Table";
 import { employeeLeaveHistory } from '../../db';
 import "../../styles/EmployeeLeaveTable.css"
+import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 const EmployeeLeaveTable = () => {
+  const {leave} = useAuth()
+
   return (
     <>
  <main className="employee-leave-table-wrapper employee-table-container mt-4">
@@ -28,7 +32,7 @@ const EmployeeLeaveTable = () => {
                 </th>
               </tr>
             </thead>
-            {employeeLeaveHistory.map((employee) => {
+            {leave.map((employee) => {
               return (
                 <tbody key={employee.id} className="employee-leave-table-body">
                   <tr>
@@ -39,7 +43,7 @@ const EmployeeLeaveTable = () => {
                           id="employee-table-name"
                           className="employee-leave-table-data pt-1"
                         >
-                          {employee.leaveType}
+                          {employee.leaveType} Leave
                         </h6>
                       </div>
                     </td>
@@ -49,7 +53,7 @@ const EmployeeLeaveTable = () => {
                         className="employee-table-data"
                       >
                         {" "}
-                        {employee.startDate}{" "}
+                        {employee.startDate.slice(0,10)}{" "}
                       </p>
                     </td>
                     <td>
@@ -58,7 +62,7 @@ const EmployeeLeaveTable = () => {
                         className="employee-leave-table-data"
                       >
                         {" "}
-                        {employee?.endDate}{" "}
+                        {employee?.endDate.slice(0,10)}{" "}
                       </p>
                     </td>
                     <td>
@@ -67,15 +71,15 @@ const EmployeeLeaveTable = () => {
                         className="employee-leave-table-data"
                       >
                         {" "}
-                        {employee?.endDate}
+                        {employee?.Days} Days
                       </p>
                     </td>
                     <td>
                       <p
                         className={`${
-                          employee.status === "Pending"
+                          employee.status === "pending"
                             ? "employee-leave-table-orange"
-                            : employee.status === "Appproved"
+                            : employee.status === "appproved"
                             ? "employee-leave-table-green"
                             : "employee-leave-table-blue"
                         }`}

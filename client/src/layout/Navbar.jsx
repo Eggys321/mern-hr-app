@@ -55,7 +55,7 @@ const Navbar = () => {
                 role="button"
               />
               <img
-                src={ladyProfilePic}
+                src={ ladyProfilePic}
                 alt="ladyProfilePic-image"
                 className=""
               />

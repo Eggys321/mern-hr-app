@@ -87,7 +87,7 @@ export const approveOrDeclineLeave = async (req, res) => {
         leaveId,
         { status: "approved", approvedBy: userId },
         { new: true }
-      ).populate("appliedBy", "email firstName lastName");
+      ).populate("appliedBy", "email firstName lastName _id");
   
       if (!leave) {
         return res.status(404).json({ error: "Leave request not found." });
@@ -105,6 +105,7 @@ export const approveOrDeclineLeave = async (req, res) => {
         endDate: leave.endDate,
         duration,
         status: "approved",
+        _id:leave._id
       });
   
       res.status(200).json({ message: `Leave request approved and notification sent to ${employee.email}.` });
@@ -153,71 +154,33 @@ export const declineLeave = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-// export const approveOrDeclineLeave = async (req, res) => {
-//     const { leaveId } = req.params;
-//     const { status } = req.body;
-//     const { userId,lastName,firstName } = req.user;  
-  
-//     try {
-//       const leave = await LEAVE.findByIdAndUpdate(
-//         leaveId,
-//         { status, approvedBy: userId },
-//         { new: true }
-//       ).populate("appliedBy approvedBy");
-  
-//       if (!leave) {
-//         return res.status(404).json({success:false, message: "Leave request not found" });
-//       }
-  
-//       await sendLeaveRequestMail(
-//         leave.appliedBy.email,
-//         `Leave Request ${status === "approved" ? "Approved" : "Declined"}`,
-//         `Your leave request has been ${status}.`
-//       );
-  
-//       res.status(200).json({success:true,message:"leave decision",leave});
-//     } catch (error) {
-//       res.status(400).json({ error: error.message });
-//     }
-//   };
-
-
-
 export const getAllLeaves = async (req, res) => {
     try {
       const leaves = await LEAVE.find()
         .populate({
           path: "appliedBy",
-          select: "fullName profileImage", 
+          select: "firstName lastName profileImage", 
           model: USER,
         })
-        .select("leaveType startDate endDate status"); 
+        .select("leaveType startDate endDate status _id"); 
   
       // Map over leaves to add Days (duration) and format response
       const formattedLeaves = leaves.map((leave) => ({
-        fullName: leave.appliedBy.fullName,
+        // 1
+        fullName: `${leave.appliedBy.firstName} ${leave.appliedBy.lastName}`,
         profileImage: leave.appliedBy.profileImage,
         leaveType: leave.leaveType,
         startDate: leave.startDate,
         endDate: leave.endDate,
         Days: calculateDuration(leave.startDate, leave.endDate),
         status: leave.status,
+        _id:leave._id
       }));
+      formattedLeaves.sort((a, b) => {
+        if (a.status === "pending" && b.status !== "pending") return -1;
+        if (a.status !== "pending" && b.status === "pending") return 1;
+        return 0; // Maintain original order if statuses are the same
+      });
         res.status(200).json({success:true,message:"all leaves",formattedLeaves});
 
     } catch (error) {
@@ -228,14 +191,7 @@ export const getAllLeaves = async (req, res) => {
 
 
 
-//   export const getAllLeaves = async (req, res) => {
-//     try {
-//       const leaves = await LEAVE.find().populate("appliedBy approvedBy");
-//       res.status(200).json({success:true,message:"all leaves",leaves});
-//     } catch (error) {
-//       res.status(500).json({ error: error.message });
-//     }
-//   };
+
 export const getSingleLeave = async (req, res) => {
     const { leaveId } = req.params;
   
@@ -243,7 +199,7 @@ export const getSingleLeave = async (req, res) => {
       const leave = await LEAVE.findById(leaveId)
         .populate({
           path: "appliedBy",
-          select: "firstName lastName profileImage email",
+          select: "firstName lastName profileImage email _id",
           model: USER,
         })
         .populate({
@@ -259,19 +215,25 @@ export const getSingleLeave = async (req, res) => {
   
       // Format response with duration included
       const leaveDetails = {
-        employee: {
-          fullName: `${leave.appliedBy.firstName} ${leave.appliedBy.lastName} `,
-          profileImage: leave.appliedBy.profileImage,
-          email: leave.appliedBy.email,
-        },
+        employee: leave.appliedBy
+          ? {
+              fullName: `${leave.appliedBy.firstName} ${leave.appliedBy.lastName}`,
+              profileImage: leave.appliedBy.profileImage,
+              email: leave.appliedBy.email,
+              _id:leave.appliedBy._id
+            }
+          : null,  
         leaveType: leave.leaveType,
         startDate: leave.startDate,
         endDate: leave.endDate,
         duration: calculateDuration(leave.startDate, leave.endDate),
         description: leave.description,
         status: leave.status,
-        approvedBy:`${leave.approvedBy.firstName} ${leave.approvedBy.lastName} `
+        approvedBy: leave.approvedBy
+          ? `${leave.approvedBy.firstName} ${leave.approvedBy.lastName}`
+          : "Not yet approved",  
       };
+  
   
       res.status(200).json(leaveDetails);
     } catch (error) {
@@ -286,7 +248,8 @@ export const getEmployeeLeaves = async (req, res) => {
     try {
       const leaves = await LEAVE.find({ appliedBy: userId })
         .select("leaveType startDate endDate status")
-        .lean();
+        .lean()
+        .sort({ createdAt: -1 })
   
       const leavesWithDays = leaves.map(leave => ({
         ...leave,
