@@ -16,7 +16,7 @@ const EmployeeLeaveTable = () => {
       
       try {
         setLoading(true);
-        const req = await axios.get("http://localhost:4040/api/leave/employee/leaves",{
+        const req = await axios.get("https://mern-hr-app.onrender.com/api/leave/employee/leaves",{
           headers:{
             Authorization:`Bearer ${token}`
           }
