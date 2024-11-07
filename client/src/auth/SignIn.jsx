@@ -27,7 +27,7 @@ const SignIn = () => {
   } = useForm({
     resolver: yupResolver(signInSchema),
     defaultValues: {
-      email: "oladapomubarak@gmail.com",
+      email: "demoaccount2@gmail.cooom",
       password: "12345678",
     },
     signInSchema
