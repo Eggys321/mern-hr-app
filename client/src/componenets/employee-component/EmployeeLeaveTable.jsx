@@ -4,9 +4,42 @@ import { employeeLeaveHistory } from '../../db';
 import "../../styles/EmployeeLeaveTable.css"
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { Loader } from '../../utils/Loader';
 const EmployeeLeaveTable = () => {
-  const {leave} = useAuth()
+  const [leave,setLeave] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  const {createLeave} = useAuth()
+  const token = localStorage.getItem("hr-token")
+  useEffect(()=>{
+    const getLeaveHistory = async()=>{
+      
+      try {
+        setLoading(true);
+        const req = await axios.get("http://localhost:4040/api/leave/employee/leaves",{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        })
+        console.log(req.data);
+        setLeave(req.data)
+      
+        
+      } catch (error) {
+        
+      }finally{
+        setLoading(false);
+
+      }
+    }
+    getLeaveHistory()
+  },[])
+  if (loading)
+    return (
+      <div className="d-flex justify-content-center">
+        <Loader />
+      </div>
+    );
   return (
     <>
  <main className="employee-leave-table-wrapper employee-table-container mt-4">
