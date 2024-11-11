@@ -29,7 +29,7 @@ export const applyForLeave = async (req, res) => {
             startDate,
             endDate,
             duration: calculateDuration(startDate, endDate),
-            clientUrl: `http://localhost:5173/admin-dashboard/leaveboard`
+            clientUrl: `https://mern-hr-app.vercel.app/admin-dashboard/leaveboard`
         });
     }
     
