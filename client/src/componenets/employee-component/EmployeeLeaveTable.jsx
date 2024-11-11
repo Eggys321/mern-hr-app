@@ -112,7 +112,7 @@ const EmployeeLeaveTable = () => {
                         className={`${
                           employee.status === "pending"
                             ? "employee-leave-table-orange"
-                            : employee.status === "appproved"
+                            : employee.status === "approved"
                             ? "employee-leave-table-green"
                             : "employee-leave-table-blue"
                         }`}

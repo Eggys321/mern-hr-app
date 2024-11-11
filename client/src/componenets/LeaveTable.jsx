@@ -8,6 +8,7 @@ import { Loader } from "../utils/Loader";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/esm/Button";
 import MyButton from "./MyButton";
+import toast from "react-hot-toast";
 
 const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
   const [data, setData] = useState([]);
@@ -27,37 +28,38 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
       );
       setSelectedLeave(response.data);
       setShowModal(true);
-      console.log(response.data);
     } catch (error) {
       setError("Error fetching leave details");
-      console.error(error);
     } finally {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    const fetchLeave = async () => {
-      try {
-        setLoading(true);
-        const req = await axios.get(
-          "https://mern-hr-app.onrender.com/api/leave/all-leaves",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log(req.data.formattedLeaves);
+  const fetchLeave = async () => {
+    try {
+      setLoading(true);
+      const req = await axios.get(
+        "https://mern-hr-app.onrender.com/api/leave/all-leaves",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(req.data);
 
-        setData(req.data.formattedLeaves);
-      } catch (error) {
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchLeave();
-  }, []);
+      setData(req.data.formattedLeaves);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const approveLeave = async (leaveId) => {
+      if (!leaveId) {
+      console.error("No leaveId provided");
+      setError("No leave ID provided.");
+      return;
+    }
     try {
       const req = await fetch(
         `https://mern-hr-app.onrender.com/api/leave/${leaveId}/approve`,
@@ -71,10 +73,41 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
         }
       );
       const res = await req.json();
-      console.log(res);
-      
+      if(res.success){
+        toast.success(res.message)
+        fetchLeave()
+        setShowModal(false);
+
+      }
     } catch (error) {}
   };
+  const declineLeave = async (leaveId) => {
+   
+    try {
+      const req = await fetch(
+        `https://mern-hr-app.onrender.com/api/leave/${leaveId}/decline`,
+        
+        {
+          method:"PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type":"application/json"
+          },
+        }
+      );
+      const res = await req.json();
+      if(res.success){
+        toast.success(res.message)
+        fetchLeave()
+        setShowModal(false);
+
+      }
+    } catch (error) {}
+  };
+    useEffect(() => {
+  
+    fetchLeave();
+  }, []);
   if (loading)
     return (
       <div className="d-flex justify-content-center">
@@ -83,10 +116,10 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
     );
   const handleRowClick = (leaveId) => {
     if (!leaveId) {
-      console.error("No leaveId provided to handleRowClick");
       return;
     }
     getLeaveById(leaveId);
+    
   };
   return (
     <>
@@ -218,9 +251,9 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
                   <p>
                     <strong>Status:</strong> {selectedLeave.status}
                   </p>
-                  <p>
-                    <strong>Approved By:</strong> {selectedLeave.approvedBy}
-                  </p>
+                { <p>
+                  <strong>  {selectedLeave?.status === "declined" ? "Declined by" : selectedLeave?.status === "approved" ? "Approved by" : ""} </strong> {selectedLeave?.status === "pending" ? " " : ": " + selectedLeave.approvedBy}
+                </p>}
                   <div className="employee-profile-image">
                     <img
                       className="img-fluid rounded-5"
@@ -228,25 +261,33 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
                       alt=""
                     />
                   </div>
-                  <h1>id {selectedLeave?.employee?._id} </h1>
                   <div className="container row">
                     <div className="mt-4 col-lg-12 ps-0 gap-3 d-flex flex-column-reverse flex-md-row gap-1 w-100">
-                      <MyButton
-                        onClick={() =>
-                          approveLeave(selectedLeave?._id)
-                        }
-                        variant="primary"
-                        className="save-and-continue-btn"
-                        text="Approve"
-                        // disabled={isSubmitting}
-                      />
-                      <MyButton
-                        variant="outline-danger"
-                        text="Decline"
-                        className="cancel-btn mb-3"
-                        type="submit"
-                        // disabled={isSubmitting}
-                      />
+                      {selectedLeave.status === "pending" && (
+
+                        <>
+                        <MyButton
+                          onClick={() =>
+                            approveLeave(selectedLeave?.leaveId)
+                          }
+                          variant="primary"
+                          className="save-and-continue-btn"
+                          text="Approve"
+                          // disabled={isSubmitting}
+                        />
+                        <MyButton
+                          onClick={() =>
+                            declineLeave(selectedLeave?.leaveId)
+                          }
+                          variant="outline-danger"
+                          text="Decline"
+                          className="cancel-btn mb-3"
+                          type="submit"
+                          // disabled={isSubmitting}
+                        />
+                        
+                        </>
+                      )}
                     </div>
                   </div>
                 </>

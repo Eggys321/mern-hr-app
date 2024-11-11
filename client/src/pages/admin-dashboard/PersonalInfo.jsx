@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, Outlet, useMatch } from "react-router-dom";
+import { NavLink, Outlet, useMatch,useNavigate } from "react-router-dom";
 import Nav from "../../layout/Nav";
 import "../../styles/PersonalInfo.css";
 import Form from "react-bootstrap/Form";
@@ -15,6 +15,7 @@ const PersonalInfo = () => {
   const match = useMatch("/admin-dashboard/employees/personal-info");
   const [imagePreview, setImagePreview] = useState(null);
   const [imageError, setImageError] = useState("");
+  const navigate = useNavigate();
 
   const {
     register,
@@ -41,8 +42,8 @@ const PersonalInfo = () => {
   
         localStorage.setItem("personalInfo", JSON.stringify(formDataWithImage));
         setImagePreview(null);
+        navigate("/admin-dashboard/employees/personal-info/professional")
         toast.success("saved successfully")
-        console.log("Saved to local storage:", formDataWithImage);
         reset();
       };
   

@@ -12,7 +12,6 @@ const Employees = () => {
   const isTeamsRoute = location.pathname.includes(
     "/admin-dashboard/employees/teams"
   );
-  console.log(location.pathname);
 
   return (
     <>

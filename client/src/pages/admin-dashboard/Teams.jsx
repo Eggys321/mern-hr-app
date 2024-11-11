@@ -10,10 +10,11 @@ const Teams = () => {
   const [dept, setDept] = useState([]);
   const [selectedDept, setSelectedDept] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  // console.log(departments);
+  const [isLoading,setIsLoading] = useState(false)
   const token = localStorage.getItem("hr-token");
   const getDepts = async () => {
     try {
+      setIsLoading(true)
       const req = await axios.get(
         "https://mern-hr-app.onrender.com/api/department/all-departments",
         {
@@ -22,16 +23,18 @@ const Teams = () => {
           },
         }
       );
-      console.log(req.data.departments);
       setDept(req.data.departments);
     } catch (error) {
-      console.log(error);
+    }finally{
+      setIsLoading(false)
     }
   };
 
   // signle dept
   const getDeptById = async (id) => {
+
     try {
+      setIsLoading(true)
       const res = await axios.get(`https://mern-hr-app.onrender.com/api/department/departments/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -39,10 +42,10 @@ const Teams = () => {
       });
       setSelectedDept(res.data.department);
       setShowModal(true); 
-      console.log(res.data.department);
       
     } catch (error) {
-      console.log(error);
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -50,6 +53,12 @@ const Teams = () => {
   useEffect(() => {
     getDepts();
   }, []);
+  if (isLoading)
+    return (
+      <div className="d-flex justify-content-center">
+        <Loader />
+      </div>
+    );
   return (
     <>
       <main className="teams-wrapper">
@@ -136,7 +145,8 @@ const Teams = () => {
             
           </Modal.Header>
           <Modal.Body>
-           {selectedDept?.members?.map((depts)=>{
+            
+           { selectedDept?.members?.map((depts)=>{
             return(
               <div className="d-flex justify-content-between">
                 <div className="teams-wrapper-employees-profile-pic">

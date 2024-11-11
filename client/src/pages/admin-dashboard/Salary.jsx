@@ -1,6 +1,6 @@
 import React from "react";
 import Nav from "../../layout/Nav";
-import { NavLink } from "react-router-dom";
+import { NavLink,useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import MyButton from "../../componenets/MyButton";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,6 +9,7 @@ import { salary } from "../../utils/ValidationSchema";
 import toast from "react-hot-toast";
 
 const Salary = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -19,6 +20,8 @@ const Salary = () => {
   });
   const onSubmit = (data) => {
     localStorage.setItem("salary", JSON.stringify(data));
+    navigate("/admin-dashboard/employees/personal-info/user-account")
+
     toast.success("saved successfully")
     reset()
    

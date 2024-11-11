@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink,useNavigate } from "react-router-dom";
 import Nav from "../../layout/Nav";
 import Form from "react-bootstrap/Form";
 import MyButton from "../../componenets/MyButton";
@@ -14,6 +14,7 @@ const Professional = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const token = localStorage.getItem("hr-token")
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -23,12 +24,11 @@ const Professional = () => {
     resolver: yupResolver(professional),
   });
   const onSubmit = (data) => {
-    // Save data to local storage or perform other actions
     localStorage.setItem("professional", JSON.stringify(data));
 
     console.log(data);
     toast.success("saved successfully")
-    // Reset the form after submission
+    navigate("/admin-dashboard/employees/personal-info/salary")
     reset();
   };
   useEffect(() => {

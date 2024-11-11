@@ -29,7 +29,6 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
           },
         }
       );
-      console.log(response.data.users);
       setEmployees(response.data.users);
       setTotalPages(response.data.totalPages);
     } catch (err) {
@@ -57,13 +56,11 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
       const req = await axios.get(`https://mern-hr-app.onrender.com/api/employee/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(req.data.employee);
       
       setSelectedEmployee(req.data.employee);
       setShowModal(true); 
     } catch (error) {
       setError("Error fetching task details");
-      console.error(error);
     } finally {
       setLoading(false);
     }

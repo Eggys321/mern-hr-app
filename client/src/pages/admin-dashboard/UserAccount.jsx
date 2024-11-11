@@ -23,34 +23,11 @@ const navigate = useNavigate()
   const token = localStorage.getItem("hr-token");
 
   const onSubmit = async (data) => {
-    // Save the password or perform other actions
     localStorage.setItem("userAccount", JSON.stringify(data));
     console.log(data);
     const personalInfo = JSON.parse(localStorage.getItem("personalInfo"));
     const professionalInfo = JSON.parse(localStorage.getItem("professional"));
     const salaryInfo = JSON.parse(localStorage.getItem("salary"));
-    // const accountInfo = JSON.parse(localStorage.getItem("userAccount"));
-    // console.log(accountInfo);
-    
-    // const finalPayload = {
-    //   firstName: personalInfo?.firstName || "",
-    //   lastName: personalInfo?.lastName || "",
-    //   mobileNumber: personalInfo?.mobileNumber || "",
-    //   email: personalInfo?.email || "",
-    //   dateOfBirth: personalInfo?.dateOfBirth || "",
-    //   maritalStatus: personalInfo?.maritalStatus || "",
-    //   gender: personalInfo?.gender || "",
-    //   address: personalInfo?.address || "",
-    //   profileImage: personalInfo?.profileImage || "",
-    //   jobTitle: professionalInfo?.jobTitle || "",
-    //   department: professionalInfo?.department || "",
-    //   officeOfEmployment: professionalInfo?.officeOfEmployment || "",
-    //   employmentStatus: professionalInfo?.employmentStatus || "",
-    //   salary: salaryInfo?.salary || 0,
-    //   startDate: salaryInfo?.startDate || "",
-    //   password: accountInfo?.password || "",
-    //   confirmPassword: accountInfo?.confirmPassword || ""
-    // };
     const finalPayload = new FormData();
     finalPayload.append("firstName", personalInfo?.firstName || "");
     finalPayload.append("lastName", personalInfo?.lastName || "");
@@ -60,7 +37,7 @@ const navigate = useNavigate()
     finalPayload.append("maritalStatus", personalInfo?.maritalStatus || "");
     finalPayload.append("gender", personalInfo?.gender || "");
     finalPayload.append("address", personalInfo?.address || "");
-    finalPayload.append("profileImage", personalInfo?.profileImage); // Append profile image
+    finalPayload.append("profileImage", personalInfo?.profileImage);
     finalPayload.append("jobTitle", professionalInfo?.jobTitle || "");
     finalPayload.append("department", professionalInfo?.department || "");
     finalPayload.append(
@@ -76,11 +53,8 @@ const navigate = useNavigate()
     finalPayload.append("password", data?.password || "");
     finalPayload.append("confirmPassword", data?.confirmPassword || "");
 
-    // console.log("Final Payload:", finalPayload);
     console.log("Final Payload:", finalPayload);
-    // for (const key in data) {
-    //   finalPayload.append(key, data[key]);
-    // }
+  
     try {
       const response = await axios.post(
         "https://mern-hr-app.onrender.com/api/auth/signup",
@@ -96,9 +70,7 @@ const navigate = useNavigate()
         toast.success(response.data.message);
         navigate("/admin-dashboard/employees/allemployees")
       }
-      // if(!response.response.data.success){
-      //   toast.error(response.response.data.errMsg)
-      // }
+     
       console.log("Signup successful:", response.data);
       // localStorage.removeItem("personalInfo");
       // localStorage.removeItem("professionalInfo");

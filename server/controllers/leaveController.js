@@ -82,7 +82,6 @@ export const approveOrDeclineLeave = async (req, res) => {
     const { userId } = req.user;  
   
     try {
-      // Update the leave request status to approved
       const leave = await LEAVE.findByIdAndUpdate(
         leaveId,
         { status: "approved", approvedBy: userId },
@@ -108,7 +107,7 @@ export const approveOrDeclineLeave = async (req, res) => {
         _id:leave._id
       });
   
-      res.status(200).json({ message: `Leave request approved and notification sent to ${employee.email}.` });
+      res.status(200).json({success:true, message: `Leave request approved and notification sent to ${employee.email}.` });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -146,7 +145,7 @@ export const declineLeave = async (req, res) => {
         status: "declined",
       });
   
-      res.status(200).json({ message: `Leave request declined and notification sent to ${employee.email}.` });
+      res.status(200).json({success:true, message: `Leave request declined and notification sent to ${employee.email}.` });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -164,9 +163,7 @@ export const getAllLeaves = async (req, res) => {
         })
         .select("leaveType startDate endDate status _id"); 
   
-      // Map over leaves to add Days (duration) and format response
       const formattedLeaves = leaves.map((leave) => ({
-        // 1
         fullName: `${leave.appliedBy.firstName} ${leave.appliedBy.lastName}`,
         profileImage: leave.appliedBy.profileImage,
         leaveType: leave.leaveType,
@@ -194,6 +191,9 @@ export const getAllLeaves = async (req, res) => {
 
 export const getSingleLeave = async (req, res) => {
     const { leaveId } = req.params;
+    if (!leaveId) {
+      return res.status(400).json({ error: "Leave ID is required." });
+    }
   
     try {
       const leave = await LEAVE.findById(leaveId)
@@ -204,10 +204,10 @@ export const getSingleLeave = async (req, res) => {
         })
         .populate({
           path: "approvedBy",
-          select: "firstName lastName",
+          select: "firstName lastName _id",
           model: USER,
         })
-        .select("leaveType startDate endDate description status approvedBy"); 
+        .select("leaveType startDate endDate description status approvedBy  leaveId"); 
   
       if (!leave) {
         return res.status(404).json({ error: "Leave request not found" });
@@ -215,6 +215,7 @@ export const getSingleLeave = async (req, res) => {
   
       // Format response with duration included
       const leaveDetails = {
+        leaveId: leave._id,
         employee: leave.appliedBy
           ? {
               fullName: `${leave.appliedBy.firstName} ${leave.appliedBy.lastName}`,
@@ -229,6 +230,7 @@ export const getSingleLeave = async (req, res) => {
         duration: calculateDuration(leave.startDate, leave.endDate),
         description: leave.description,
         status: leave.status,
+        
         approvedBy: leave.approvedBy
           ? `${leave.approvedBy.firstName} ${leave.approvedBy.lastName}`
           : "Not yet approved",  
