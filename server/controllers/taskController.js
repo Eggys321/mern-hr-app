@@ -89,7 +89,7 @@ export const createTask = async (req, res) => {
 export const getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find()
-      .populate("assignedMembers", "firstName lastName profileImage")
+      .populate("assignedMembers", "firstName lastName profileImage description")
       .sort({ createdAt: -1 });
     const tasksWithDetails = tasks.map((task) => {
       return {
@@ -98,7 +98,8 @@ export const getAllTasks = async (req, res) => {
         startDate: task.startDate,
         endDate: task.endDate,
         status: task.status,
-        _id:task._id
+        _id:task._id,
+        description:task.description
       };
     });
 
@@ -165,7 +166,7 @@ export const getTaskById = async (req, res) => {
   try {
     const task = await Task.findById(id).populate(
       "assignedMembers",
-      "firstName lastName profileImage _id"
+      "firstName lastName profileImage _id description"
     );
 
     if (!task) {
@@ -181,6 +182,7 @@ export const getTaskById = async (req, res) => {
       startDate: task.startDate,
       endDate: task.endDate,
       status: task.status,
+      description:task.description
     };
 
     res.status(200).json({

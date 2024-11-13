@@ -8,6 +8,7 @@ import axios from "axios";
 import { Loader } from "../utils/Loader";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import MyButton from "./MyButton"
 
 const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
   const [employees, setEmployees] = useState([]);
@@ -19,7 +20,7 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
   const [showModal, setShowModal] = useState(false);
   const token = localStorage.getItem("hr-token");
   const fetchEmployees = async () => {
-    setLoading(true); 
+    setLoading(true);
     try {
       const response = await axios.get(
         `https://mern-hr-app.onrender.com/api/employee/users?page=${page}&limit=10`,
@@ -31,6 +32,7 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
       );
       setEmployees(response.data.users);
       setTotalPages(response.data.totalPages);
+      console.log(response.data.users);
     } catch (err) {
       setError(err.response?.data.errMsg || "Error fetching employees");
     } finally {
@@ -56,9 +58,10 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
       const req = await axios.get(`https://mern-hr-app.onrender.com/api/employee/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       setSelectedEmployee(req.data.employee);
-      setShowModal(true); 
+      setShowModal(true);
+      console.log(req.data.employee);
     } catch (error) {
       setError("Error fetching task details");
     } finally {
@@ -148,7 +151,9 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
                         className="employee-table-data"
                       >
                         {" "}
-                        {employee?.department?.manager?.firstName + " " + employee?.department?.manager?.lastName }{" "}
+                        {employee?.department?.manager?.firstName +
+                          " " +
+                          employee?.department?.manager?.lastName}{" "}
                       </p>
                     </td>
                     <td>
@@ -171,19 +176,90 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
             })}
           </Table>
           {/* Modal for Employee Details */}
-          <Modal show={showModal} onHide={() => setShowModal(false)} centered       size="lg"
+          <Modal
+            show={showModal}
+            onHide={() => setShowModal(false)}
+            centered
+            size="lg"
           >
             <Modal.Header closeButton>
-              <Modal.Title>Employee’s Profile</Modal.Title>
+              <Modal.Title className="employment-modal-header ps-2">Employee’s Profile</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="container employment-modal-wrapper">
               {selectedEmployee ? (
                 <>
-                  <p>
-                    <strong>Title:</strong> {selectedEmployee?.address}
-                  </p>
-                  <p><strong>Status:</strong> {selectedEmployee.email}</p>
-                  <img src={selectedEmployee.profileImage} alt="" style={{maxWidth:"76px"}} />
+                  <section className="container py-3">
+                    <div className="d-flex gap-4 flex-wrap justify-content-between" >
+                      <div className="d-flex flex-wrap gap-3">
+
+                      <div className="employee-modal-profile-image">
+                        <img
+                          src={selectedEmployee?.profileImage}
+                          alt=""
+                        />
+                      </div>
+                      <div className="employment-modal-contact">
+                        <h6 className="employment-modal-fullname"> {`${selectedEmployee?.firstName} ${selectedEmployee?.lastName}`}  </h6>
+                        <p className="employment-modal-email"> {selectedEmployee?.email} </p>
+                      </div>
+                      </div>
+                      <div>
+                        <MyButton className="employment-modal-edit-btn" text="Edit Profile"/>
+                      </div>
+                    </div>
+                    <h2 className="py-4">Personal Information</h2>
+                  <div>
+                    <div className="row">
+                      <div className="col-lg-4">
+
+                      <h5 className="employment-modal-h5"> Mobile Number </h5>
+                      <p className="employment-modal-ptag"> {selectedEmployee?.mobileNumber} </p>
+                      </div>
+                      <div className="col-lg-4">
+
+                      <h5 className="employment-modal-h5"> Date of Birth </h5>
+                      <p className="employment-modal-ptag"> {selectedEmployee?.dateOfBirth.slice(0,10)} </p>
+                      </div>
+                      <div className="col-lg-4">
+
+                      <h5 className="employment-modal-h5"> Marital Status</h5>
+                      <p className="employment-modal-ptag"> {selectedEmployee?.maritalStatus} </p>
+                      </div>
+                      <div className="col-lg-4 mt-3">
+
+                      <h5 className="employment-modal-h5"> Gender </h5>
+                      <p className="employment-modal-ptag"> {selectedEmployee?.gender} </p>
+                      </div>
+                      <div className="col-lg-4 mt-3">
+
+                      <h5 className="employment-modal-h5">Address</h5>
+                      <p className="employment-modal-ptag"> {selectedEmployee?.address} </p>
+                      </div>
+                    </div>
+                    
+                  </div>
+                  <div>
+                    <h2 className="py-4">Job Information</h2>
+                    <div className="row">
+                      <div className="col-lg-4">
+                        <h5 className="employment-modal-h5">Office Of Employment</h5>
+                        <p className="employment-modal-ptag"> {selectedEmployee?.officeOfEmployment} </p>
+                      </div>
+                      <div className="col-lg-4">
+                        <h5 className="employment-modal-h5">Job Title</h5>
+                        <p className="employment-modal-ptag"> {selectedEmployee?.jobTitle} </p>
+                      </div>
+                      <div className="col-lg-4">
+                        <h5 className="employment-modal-h5">Department</h5>
+                        <p className="employment-modal-ptag"> {selectedEmployee?.department?.name} </p>
+                      </div>
+                      <div className="col-lg-4">
+                        <h5 className="employment-modal-h5 mt-3">Employment Type</h5>
+                        <p className="employment-modal-ptag"> {selectedEmployee?.employmentStatus} </p>
+                      </div>
+                    </div>
+                  </div>
+                  </section>
                 </>
               ) : (
                 <Loader />

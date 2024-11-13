@@ -85,7 +85,27 @@
   height: 100%;
   object-fit: cover;
 }
-
+.modal-header{
+  color: rgba(41, 41, 41, 1);
+  font-weight: 600;
+  font-size: 28px;
+}
+.modal-wrapper-title{
+  color: rgba(116, 116, 116, 1);
+  font-weight: 400;
+  font-size: 20px;
+  padding-right: 20px;
+}
+.modal-wrapper-value{
+  color: rgba(26, 26, 26, 1);
+  font-weight: 500;
+  font-size: 20px;
+}
+.modal-wrapper-status{
+  color: rgba(242, 155, 7, 1);
+  background-color: rgba(255, 245, 227, 1);
+  padding: 4px 16px;
+}
 @media (min-width: 766px) and (max-width: 991px) {
   .task-table {
     overflow-x: scroll;

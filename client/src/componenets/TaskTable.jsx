@@ -102,9 +102,6 @@ const TaskTable = () => {
         <Table role="button"  responsive>
           <thead className="task-table-wrapper-head">
             <tr>
-              {/* <th>
-                <h5 className="task-table-wrapper-h5"># </h5>
-              </th> */}
               <th>
                 <h5 className="task-table-wrapper-h5"> Task </h5>
               </th>
@@ -115,7 +112,10 @@ const TaskTable = () => {
                 <h5 className="task-table-wrapper-h5">Duration</h5>
               </th>
               <th>
-                <h5 className="task-table-wrapper-h5">Action</h5>
+                <h5 className="task-table-wrapper-h5">Status</h5>
+              </th>
+              <th>
+                <h5 className="task-table-wrapper-h5">Action </h5>
               </th>
             </tr>
           </thead>
@@ -124,13 +124,7 @@ const TaskTable = () => {
               <tbody key={task?._id} className="task-table-body">
                 
                 <tr>
-                  {/* <td>
-                    <input
-                      type="checkbox"
-                      className="task-table-body-check-box"
-                      role="button"
-                    />
-                  </td> */}
+                 
                   <td>
                     <h6 className="task-table-title pt-1">{task?.title}</h6>
                   </td>
@@ -171,15 +165,22 @@ const TaskTable = () => {
                       {task?.status}
                     </p>
                   </td>
-                  <div className="d-flex gap-2">
-
+                  <td className="d-flex gap-2">
+                    {/* <input
+                      type="checkbox"
+                      className="task-table-body-check-box"
+                      role="button"
+                    /> */}
                   <p className="text-success" role="button" onClick={() => getTaskById(task._id)}>
                   <MdGridView fontSize={22}/>
 
                   </p>
                   <p className="text-danger" role="button" onClick={()=>deleteTask(task._id)}><MdDelete  fontSize={22} />
                   </p>
-                  </div>
+                  </td>
+                  {/* <div className="d-flex gap-2">
+
+                  </div> */}
                 </tr>
               </tbody>
             );
@@ -188,24 +189,39 @@ const TaskTable = () => {
         <Modal show={showModal} onHide={() => setShowModal(false)} centered       size="lg"
         >
           <Modal.Header closeButton>
-            <Modal.Title>Task Details</Modal.Title>
+            <Modal.Title className="modal-header ps-0">Task Details</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
+          <Modal.Body className="container modal-wrapper">
             {selectedTask ? (
               <>
-                <p><strong>Title:</strong> {selectedTask.title}</p>
-                <p><strong>Status:</strong> {selectedTask.status}</p>
-                {/* <p><strong>Assigned Members:</strong> {selectedTask.assignedMembers.map(member => `${member.firstName} ${member.lastName}`).join(', ')}</p> */}
-                
-                <p><strong>Start Date:</strong> {selectedTask.startDate.slice(0, 10)}</p>
-                <p><strong>End Date:</strong> {selectedTask.endDate.slice(0, 10)}</p>
+              <div className="row">
+
+                <p className="col-lg-6 modal-wrapper-title">Task Name: <span className="modal-wrapper-value">{selectedTask.title} </span> </p>
+                <div className="col-lg-6">
+                <div className="d-flex gap-2">
+
+                <p className=" modal-wrapper-title">Team: </p>
                 {selectedTask.assignedMembers.map((img)=>{
                   return(
                     <div className="task-profile-img">
-                  <img src={img?.profileImage} alt="" className="" />
+                <img src={img?.profileImage} alt="" className="" />
                     </div>
                   )
                 })}
+                </div>
+              </div>
+                </div>
+                {/* <p><strong>Assigned Members:</strong> {selectedTask.assignedMembers.map(member => `${member.firstName} ${member.lastName}`).join(', ')}</p> */}
+                <div className="row">
+
+                <p className="col-lg-6 modal-wrapper-title">Start Date: <span className="modal-wrapper-value">{selectedTask.startDate.slice(0, 10)} </span> </p>
+                <p className="col-lg-6 modal-wrapper-title">End Date: <span className="modal-wrapper-value">{selectedTask.endDate.slice(0, 10)} </span> </p>
+                </div>
+                <div className="row">
+
+                <p className="col-lg-6 modal-wrapper-title">Description: <span className="modal-wrapper-value">{selectedTask?.description} </span> </p>
+                <p className="col-lg-6 modal-wrapper-title">Status: <span className="modal-wrapper-status">{selectedTask.status}</span></p>
+                </div>
               </>
             ) : (
               <Loader />

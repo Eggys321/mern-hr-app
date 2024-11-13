@@ -86,7 +86,58 @@
 .disbale{
   background-color: rgba(210, 210, 210, 1);
 }
+.employment-modal-header{
+  color: rgba(41, 41, 41, 1);
+  font-weight: 600;
+  font-size: 28px;
+}
+.employment-modal-fullname{
+  color: rgba(14, 10, 45, 1);
+  font-weight: 500;
+  font-size: 30px;
+}
+.employment-modal-email{
+  font-size: 20px;
+  color: rgba(116, 116, 116, 1);
+  font-weight: 400;
+}
 
+.employee-modal-profile-image{
+  width: 76.75px; 
+  height: 76.75px;
+  border-radius: 86.23px;
+  overflow: hidden;
+  border: 2.59px solid rgba(255, 255, 255, 1);
+  
+}
+
+.employee-modal-profile-image img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  
+}
+.employment-modal-contact{
+  line-height: 17.25px;
+
+}
+.employment-modal-edit-btn{
+  padding: 8px 46px;
+  color: rgba(243, 242, 251, 1);
+  font-weight: 500;
+  font-size: 16px;
+  background-color: rgba(52, 57, 202, 1);
+}
+.employment-modal-h5{
+  font-size: 20px;
+  color: rgba(116, 116, 116, 1);
+  font-weight: 400;
+}
+.employment-modal-ptag{
+  color: rgba(26, 26, 26, 1);
+  font-size: 20px;
+  font-weight: 500;
+}
 @media(max-width:765px){
   .employee-profile-image{
     width: 40.84px; 
