@@ -45,7 +45,6 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
           },
         }
       );
-      console.log(req.data);
 
       setData(req.data.formattedLeaves);
     } catch (error) {
@@ -56,7 +55,6 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
 
   const approveLeave = async (leaveId) => {
       if (!leaveId) {
-      console.error("No leaveId provided");
       setError("No leave ID provided.");
       return;
     }
