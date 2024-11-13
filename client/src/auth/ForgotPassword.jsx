@@ -34,7 +34,6 @@ const ForgotPassword = () => {
       body:JSON.stringify(data)
     })
     const res = await req.json();
-    console.log(res);
     
     if(!res.success){
       toast.error(res.errMsg)
@@ -43,7 +42,6 @@ const ForgotPassword = () => {
       toast.success(res.message)
 
     }
-    console.log(res);
     
    } catch (error) {
     

@@ -43,7 +43,6 @@ const SignIn = () => {
         body:JSON.stringify(data)
       })
       const res = await req.json();
-      console.log(res);
     
       if(!res.success){
         toast.error(res.errMsg)
@@ -68,7 +67,6 @@ const SignIn = () => {
       setIsError("An unexpected error occurred. Please try again.");
     }
     toast.error(isError);
-    console.log("Error details:", error);
       
     }finally{
       setIsClicked(false)

@@ -21,7 +21,6 @@ const AdminSummary = () => {
       }
     })
     // const res = await req.json();
-    console.log(req.data.eventLenght);
 
     setData(req.data.eventLenght)
     

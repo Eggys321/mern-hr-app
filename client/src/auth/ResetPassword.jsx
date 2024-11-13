@@ -52,7 +52,6 @@ const ResetPassword = () => {
         toast.success(res.message);
         navigate("/auth/sign-in");
       }
-      console.log(res);
     } catch (error) {
     } finally {
       setIsClicked(false);
