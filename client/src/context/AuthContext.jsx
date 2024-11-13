@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
         }
       );
       // const res = await req.json();
-      console.log(req.data.eventLenght);
+      // console.log(req.data.eventLenght);
 
       setData(req.data.eventLenght);
     } catch (error) {}
@@ -50,7 +50,6 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify(leaveData),
       });
       const res = await req.json()
-      console.log(res);
       if(!res.success){
         toast.error(res.errMsg)
       }
@@ -73,7 +72,6 @@ export const AuthProvider = ({ children }) => {
           Authorization:`Bearer ${token}`
         }
       })
-      console.log(req.data);
       setLeave(req.data)
     
       
@@ -94,7 +92,6 @@ export const AuthProvider = ({ children }) => {
               },
             }
           );
-          console.log(request);
 
           if (request.data.success) {
             setUser(request.data.user);
@@ -104,7 +101,6 @@ export const AuthProvider = ({ children }) => {
           setIsLoading(false);
         }
       } catch (error) {
-        console.log(error);
         if (error.request && !error.request.error) {
           setUser(null);
         }
