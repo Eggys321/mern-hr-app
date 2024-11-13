@@ -33,7 +33,6 @@ const TaskTable = () => {
           Authorization: `Bearer ${token}`,
         }
       })
-      console.log(req.data.tasks);
       setData(req.data.tasks)
     } catch (error) {
       setError('Error fetching tasks');
@@ -54,7 +53,6 @@ const TaskTable = () => {
       })
       setSelectedTask(req.data.task);
       setShowModal(true);
-      console.log(req.data.task);
    
     } catch (error) {
     
@@ -72,7 +70,6 @@ const TaskTable = () => {
         }
       })
     
-      console.log(req);
       if (req.data.success){
        toast.success(req.data.message) 
       }

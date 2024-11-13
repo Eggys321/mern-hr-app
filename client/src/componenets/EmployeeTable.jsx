@@ -32,7 +32,6 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
       );
       setEmployees(response.data.users);
       setTotalPages(response.data.totalPages);
-      console.log(response.data.users);
     } catch (err) {
       setError(err.response?.data.errMsg || "Error fetching employees");
     } finally {
@@ -61,7 +60,6 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
 
       setSelectedEmployee(req.data.employee);
       setShowModal(true);
-      console.log(req.data.employee);
     } catch (error) {
       setError("Error fetching task details");
     } finally {
