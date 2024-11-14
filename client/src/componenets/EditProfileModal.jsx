@@ -6,7 +6,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const EditProfileModal = (props) => {
-    const [firstname,setFirstName] = useState(props.selectedEmployee?.firstName);
+    const [firstName,setFirstName] = useState(props.selectedEmployee?.firstName);
     const [lastName, setLastName] = useState(props.selectedEmployee?.lastName);
     const [email,setEmail] = useState(props.selectedEmployee?.email);
     const [maritalStatus,setMaritalStatus] = useState(props.selectedEmployee?.maritalStatus);
@@ -16,7 +16,7 @@ const EditProfileModal = (props) => {
         e.preventDefault()
         try {
             const req = await axios.patch(`https://mern-hr-app.onrender.com/api/employee/${employeeId}`,{
-                firstname,
+                firstName,
                 lastName,email,maritalStatus,role
             },{
                 headers:{
@@ -53,7 +53,7 @@ const EditProfileModal = (props) => {
           <Form onSubmit={(e) => updateProfile(e, props.selectedEmployee._id)}>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>First Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter Name" autoFocus value={firstname} onChange={(e)=>setFirstName(e.target.value)} />
+              <Form.Control type="text" placeholder="Enter Name" autoFocus value={firstName} onChange={(e)=>setFirstName(e.target.value)} />
             </Form.Group>
             {/* last name */}
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
