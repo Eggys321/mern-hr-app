@@ -17,7 +17,7 @@ const EditProfileModal = (props) => {
         try {
             const req = await axios.patch(`https://mern-hr-app.onrender.com/api/employee/${employeeId}`,{
                 firstname,
-                lastName,email,maritalStatus
+                lastName,email,maritalStatus,role
             },{
                 headers:{
                     Authorization:`Bearer ${token}`
