@@ -8,7 +8,28 @@ export const AuthProvider = ({ children }) => {
   const [data, setData] = useState([]);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+
   const token = localStorage.getItem("hr-token");
+
+  const getEmployeeById = async (id) => {
+    try {
+      setIsLoading(true);
+      const req = await axios.get(`https://mern-hr-app.onrender.com/api/employee/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setSelectedEmployee(req.data.employee);
+      // setShowModal(true);
+    } catch (error) {
+      setError("Error fetching task details");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleRowClick = (employeeId) => {
+    getEmployeeById(employeeId);
+  };
   function login(user) {
     setUser(user);
   }

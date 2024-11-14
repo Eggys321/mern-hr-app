@@ -8,7 +8,8 @@ import axios from "axios";
 import { Loader } from "../utils/Loader";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import MyButton from "./MyButton"
+import MyButton from "./MyButton";
+import EditProfileModal from "./EditProfileModal";
 
 const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
   const [employees, setEmployees] = useState([]);
@@ -18,6 +19,7 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const token = localStorage.getItem("hr-token");
   const fetchEmployees = async () => {
     setLoading(true);
@@ -59,6 +61,7 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
       });
 
       setSelectedEmployee(req.data.employee);
+      // console.log(req.data.employee);
       setShowModal(true);
     } catch (error) {
       setError("Error fetching task details");
@@ -202,7 +205,7 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
                       </div>
                       </div>
                       <div>
-                        <MyButton className="employment-modal-edit-btn" text="Edit Profile"/>
+                        <MyButton className="employment-modal-edit-btn" text="Edit Profile" onClick={() => setShowEditModal(true)}/>
                       </div>
                     </div>
                     <h2 className="py-4">Personal Information</h2>
@@ -264,6 +267,7 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
               )}
             </Modal.Body>
           </Modal>
+          <EditProfileModal selectedEmployee={selectedEmployee} show={showEditModal} onHide={() => setShowEditModal(false)}/>
         </div>
         <div className="employee-table-pagination-wrapper row justify-content-between align-items-center">
           <div className="col-lg-6 mt-3 d-flex justify-content-between ">
