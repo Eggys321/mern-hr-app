@@ -14,7 +14,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 const Navbar = () => {
   const [isTrue, setIsTrue] = useState(false);
   const { user, isLoading, logout } = useAuth();
-console.log(user);
+// console.log(user);
 
   function handleReveal() {
     isTrue ? setIsTrue(false) : setIsTrue(true);
