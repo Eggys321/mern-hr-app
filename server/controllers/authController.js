@@ -176,6 +176,8 @@ export const signIn = async (req, res) => {
           role: user.role,
           email: user.email,
           firstName:user.firstName,
+          lastName:user.lastName,
+          profileImage:user.profileImage,
           token,
         },
       });

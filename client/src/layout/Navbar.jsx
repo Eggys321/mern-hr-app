@@ -14,6 +14,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 const Navbar = () => {
   const [isTrue, setIsTrue] = useState(false);
   const { user, isLoading, logout } = useAuth();
+console.log(user);
 
   function handleReveal() {
     isTrue ? setIsTrue(false) : setIsTrue(true);
@@ -55,9 +56,10 @@ const Navbar = () => {
                 role="button"
               />
               <img
-                src={ ladyProfilePic}
+                src={user.profileImage}
                 alt="ladyProfilePic-image"
                 className=""
+                style={{width:"20px",height:"25px" , borderRadius:"100%"}}
               />
             </div>
             {/* <h4 className="d-none d-lg-block">Eggys Eggys</h4> */}
@@ -68,7 +70,7 @@ const Navbar = () => {
                 className="drop-down-header"
               >
                 {/* Eggys Eggys */}
-                {user && user?.firstName }
+                {user && user?.firstName + ' ' + user.lastName }
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
