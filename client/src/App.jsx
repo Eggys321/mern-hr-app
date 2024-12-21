@@ -29,10 +29,7 @@ import {SignIn,
 import PrivateRoute from "./utils/PrivateRoute";
 import { Toaster } from "react-hot-toast";
 import RoleBasedRoutes from "./utils/RoleBasedRoutes";
-// import EmployeeTaskBoard from "./pages/employee-dashboard/EmployeeTaskBoard";
-// import EmployeeLeaveBoard from "./pages/employee-dashboard/EmployeeLeaveBoard";
-// import EmployeeSettings from "./pages/employee-dashboard/EmployeeSettings";
-// import EmployeeSummary from "./componenets/employee-component/EmployeeSummary";
+
 
 function App() {
   return (
