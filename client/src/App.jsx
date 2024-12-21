@@ -26,7 +26,6 @@ import {SignIn,
   EmployeeLeaveBoard,
   EmployeeSettings,
   EmployeeSummary} from "./index"
-// import SignIn from "./auth/SignIn";
 // import ForgotPassword from "./auth/ForgotPassword";
 // import ResetPassword from "./auth/ResetPassword";
 // import AdminDashboard from "./layout/AdminDashboard";
