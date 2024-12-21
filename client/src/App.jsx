@@ -26,25 +26,6 @@ import {SignIn,
   EmployeeLeaveBoard,
   EmployeeSettings,
   EmployeeSummary} from "./index"
-// import ResetPassword from "./auth/ResetPassword";
-// import AdminDashboard from "./layout/AdminDashboard";
-// import AdminSummary from "./componenets/AdminSummary";
-// import Employees from "./pages/admin-dashboard/Employees";
-// import TaskBoard from "./pages/admin-dashboard/TaskBoard";
-// import LeaveBoard from "./pages/admin-dashboard/LeaveBoard";
-// import PayRoll from "./pages/admin-dashboard/PayRoll";
-// import Settings from "./pages/admin-dashboard/Settings";
-// import Error from "./pages/Error";
-// import AllEmployees from "./pages/admin-dashboard/AllEmployees";
-// import Teams from "./pages/admin-dashboard/Teams";
-// import NewEmployee from "./pages/admin-dashboard/NewEmployee";
-// import PersonalInfo from "./pages/admin-dashboard/PersonalInfo";
-// import Salary from "./pages/admin-dashboard/Salary";
-// import Professional from "./pages/admin-dashboard/Professional";
-// import UserAccount from "./pages/admin-dashboard/UserAccount";
-// import NewTeam from "./pages/admin-dashboard/NewTeam";
-// import EditTeam from "./pages/admin-dashboard/EditTeam";
-// import EmployeeDashboard from "./layout/EmployeeDashboard";
 import PrivateRoute from "./utils/PrivateRoute";
 import { Toaster } from "react-hot-toast";
 import RoleBasedRoutes from "./utils/RoleBasedRoutes";
