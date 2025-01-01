@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from "../context/AuthContext";
 import { Loader } from "../utils/Loader";
 
-
+const apiUrl = import.meta.env.VITE_API_URL
 const SignIn = () => {
   const [isReveal, setIsReveal] = useState(false);
   const [isClicked,setIsClicked] = useState(false)
@@ -35,7 +35,7 @@ const SignIn = () => {
   async function handleSignIn(data) {
     setIsClicked(true)
     try {
-      const req = await fetch("https://mern-hr-app.onrender.com/api/auth/signin",{
+      const req = await fetch( `${apiUrl}/api/auth/signin`,{
         method:"POST",
         headers:{
           "Content-Type":"application/json"
