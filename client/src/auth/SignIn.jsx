@@ -35,7 +35,7 @@ const SignIn = () => {
   async function handleSignIn(data) {
     setIsClicked(true)
     try {
-      const req = await fetch( `${apiUrl}/api/auth/signin`,{
+      const req = await fetch(`${apiUrl}/api/auth/signin`,{
         method:"POST",
         headers:{
           "Content-Type":"application/json"
