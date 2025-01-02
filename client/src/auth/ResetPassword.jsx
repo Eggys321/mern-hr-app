@@ -75,7 +75,7 @@ const ResetPassword = () => {
 
   return (
     <>
-      <main className="main-auth reset-password d-flex justify-content-center align-items-center">
+      <main className="main-auth sign-in reset-password d-flex justify-content-center align-items-center">
         <Form
           className="reset-password-inner shadow-lg"
           onSubmit={handleSubmit(onSubmit)}
@@ -95,7 +95,7 @@ const ResetPassword = () => {
                 onClick={toggleReveal}
                 role="button"
                 className="position-absolute end-0 pt-2 pe-1"
-                src={isReveal ? vissibilityOffIcon : vissibilityOnIcon}
+                src={isReveal ? vissibilityOnIcon : vissibilityOffIcon}
                 alt="eye-open-logo"
               />
               <Form.Control
