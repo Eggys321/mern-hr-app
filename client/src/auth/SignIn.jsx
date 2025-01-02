@@ -14,6 +14,7 @@ import { useAuth } from "../context/AuthContext";
 import { Loader } from "../utils/Loader";
 
 const apiUrl = import.meta.env.VITE_API_URL
+console.log("API URL:", apiUrl);
 const SignIn = () => {
   const [isReveal, setIsReveal] = useState(false);
   const [isClicked,setIsClicked] = useState(false)
