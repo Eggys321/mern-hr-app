@@ -26,18 +26,23 @@ const port = process.env.PORT || 4040;
 const allowedOrigins = (process.env.CLIENT_URL || "")
   .split(",")
   .map((o) => o.trim().replace(/\/$/, ""))
-  .filter(Boolean)
-  .concat(["http://localhost:5173", "http://localhost:3000"]);
+  .filter(Boolean);
+
+// Vite (and most dev servers) pick whatever port is free, so a dev machine
+// can end up on 5173, 5174, 5175... depending on what else is running -
+// hardcoding one port meant CORS broke as soon as it picked a different one.
+// Any localhost/127.0.0.1 origin, on any port, is allowed here instead.
+const isLocalDevOrigin = (origin) => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
 
 app.use(helmet());
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || isLocalDevOrigin(origin)) {
       return callback(null, true);
     }
     // Logged so a rejected production origin shows up in the Render logs
     // instead of just failing silently as a "network error" in the browser.
-    console.warn(`CORS: rejected request from origin "${origin}". Allowed: ${allowedOrigins.join(", ")}`);
+    console.warn(`CORS: rejected request from origin "${origin}". Allowed: ${allowedOrigins.join(", ")} (plus any localhost port)`);
     return callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
