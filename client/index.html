@@ -6,7 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="HR Manager - manage employees, departments, tasks, and leave requests." />
     <meta name="theme-color" content="#0d6efd" />
+    <!-- Internal, login-gated tool - not meant to be indexed. -->
+    <meta name="robots" content="noindex, nofollow" />
     <title>HR Manager</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Loaded as a non-blocking preload rather than a plain <link
+         rel="stylesheet">, which would otherwise hold up first paint until
+         Google Fonts responds. The font-family already sets font-display:
+         swap, so text still renders immediately in a fallback font. -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+      />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>

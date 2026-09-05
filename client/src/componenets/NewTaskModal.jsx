@@ -106,7 +106,7 @@ const NewTaskModal = (props) => {
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Group className="mb-3" controlId="taskTitle">
               <Form.Label>Task Title</Form.Label>
               <Form.Control
                 value={title}
@@ -118,7 +118,7 @@ const NewTaskModal = (props) => {
             </Form.Group>
             <Form.Group
               className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
+              controlId="taskDescription"
             >
               <Form.Label>Task Description</Form.Label>
               <Form.Control
@@ -129,7 +129,7 @@ const NewTaskModal = (props) => {
               />
             </Form.Group>
 
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3" controlId="assignPersons">
               <Form.Label>Assign Persons</Form.Label>
               <Form.Control
                 type="text"
@@ -139,11 +139,19 @@ const NewTaskModal = (props) => {
               />
 
               {suggestions.length > 0 && (
-                <ul className="suggestions-list" role="button">
+                <ul className="suggestions-list">
                   {suggestions.map((suggestion) => (
                     <li
                       key={suggestion._id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleAddMember(suggestion)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleAddMember(suggestion);
+                        }
+                      }}
                     >
                       {suggestion.firstName} {suggestion.lastName}
                     </li>
@@ -156,10 +164,19 @@ const NewTaskModal = (props) => {
                   <span key={member._id} className="assigned-member">
                     {member.firstName} {member.lastName}
                     <span
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Remove ${member.firstName} ${member.lastName}`}
                       onClick={() => handleRemoveMember(member)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleRemoveMember(member);
+                        }
+                      }}
                       className="text-danger"
                     >
-                      <CiCircleRemove fontSize={15} className="mb-2" role="button"/>
+                      <CiCircleRemove fontSize={15} className="mb-2" aria-hidden="true"/>
                     </span>
                   </span>
                 ))}

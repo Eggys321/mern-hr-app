@@ -76,13 +76,13 @@ const SignIn = () => {
           <div className="text-center">
             <div className="d-flex justify-content-center align-items-center gap-2">
               <div>
-                <img src={navLogo} alt="nav-logo" />
+                <img src={navLogo} alt="nav-logo" width="46" height="45" />
               </div>
               <h1 className="pt-2">HR Manager</h1>
             </div>
-            <h3 className="pt-4">
+            <h2 className="pt-4">
               Welcome to HR Manager - Where Creativity Meets Opportunity!
-            </h3>
+            </h2>
             <p className="text-muted small mb-0">
               Demo account pre-filled below - just click Sign In to explore the app.
             </p>

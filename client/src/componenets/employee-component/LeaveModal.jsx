@@ -63,9 +63,9 @@ const LeaveModal = (props) => {
           <Modal.Body>
             <Form>
 
-              <Form.Group className="mb-3">
-                <Form.Label htmlFor="">Leave Type</Form.Label>
-                <Form.Select id="" className="new-team-wrapper-select"   value={leaveType}
+              <Form.Group className="mb-3" controlId="leaveType">
+                <Form.Label>Leave Type</Form.Label>
+                <Form.Select className="new-team-wrapper-select"   value={leaveType}
               onChange={(e) => setLeaveType(e.target.value)}>
                   <option value="select" disabled selected>
                     Select
@@ -82,7 +82,7 @@ const LeaveModal = (props) => {
   
                   <Form.Group
                     className="mb-3 col-lg-6 ps-0"
-                    controlId="exampleForm.ControlInput1"
+                    controlId="leaveStartDate"
                   >
                     <Form.Label>Start Date</Form.Label>
                     <Form.Control type="date" placeholder="Select Date"  value={startDate}
@@ -90,7 +90,7 @@ const LeaveModal = (props) => {
                   </Form.Group>
                   <Form.Group
                     className="mb-3 col-lg-6 px-0 "
-                    controlId="exampleForm.ControlInput1"
+                    controlId="leaveEndDate"
                   >
                     <Form.Label>End Date</Form.Label>
                     <Form.Control type="date" placeholder="Select Date" value={endDate}
@@ -100,7 +100,7 @@ const LeaveModal = (props) => {
                 </div>
               <Form.Group
             className="mb-3"
-            controlId="exampleForm.ControlTextarea1"
+            controlId="leaveDescription"
           >
             <Form.Label>Description</Form.Label>
             <Form.Control as="textarea" rows={3} value={description}

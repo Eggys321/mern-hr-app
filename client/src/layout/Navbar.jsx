@@ -17,36 +17,35 @@ const Navbar = () => {
             <OffCanvass key={idx} placement={placement} name={placement} />
           ))}
         </div>
-        <form className="nav-form position-relative d-none d-md-block">
+        <form className="nav-form position-relative d-none d-md-block" role="search">
           <input
-            name=""
-            id=""
+            type="search"
+            aria-label="Search"
             placeholder="Search"
           />
           <img
             className="position-absolute top-50 end-0 translate-middle-y pe-2"
             src={searchImg}
-            alt="searchImg-image"
+            alt=""
           />
         </form>
         <div className="nav-div d-flex gap-4 align-items-center">
           <div className="d-none d-lg-block">
-            <img src={notificationImg} alt="notifiction-image" />
+            <img src={notificationImg} alt="Notifications" />
           </div>
           <div className="d-none d-lg-block">
-            <img src={messageImg} alt="messageImg-image" />
+            <img src={messageImg} alt="Messages" />
           </div>
           <div className="d-flex gap-2 align-items-center">
             <div>
               <img
                 src={searchImg}
-                alt="searchImg-image"
+                alt=""
                 className="me-3 d-md-none"
-                role="button"
               />
               <img
                 src={user.profileImage}
-                alt="ladyProfilePic-image"
+                alt={user ? `${user.firstName} ${user.lastName}'s profile picture` : "Profile picture"}
                 className=""
                 style={{width:"20px",height:"25px" , borderRadius:"100%"}}
               />

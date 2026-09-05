@@ -37,7 +37,7 @@ const Salary = () => {
               <div className="row justify-content-between mb-4">
                 <Form.Group
                   className="mb-3 col-lg-6 ps-0 "
-                  controlId="exampleForm.ControlInput1"
+                  controlId="salary"
                 >
                   <Form.Label>Amount <span className="text-danger">*</span> </Form.Label>
                   <InputGroup>
@@ -51,7 +51,7 @@ const Salary = () => {
                 </Form.Group>
                 <Form.Group
                   className="mb-3 ps-0 col-lg-6"
-                  controlId="exampleForm.ControlInput2"
+                  controlId="startDate"
                 >
                   <Form.Label>Start Date <span className="text-danger">*</span> </Form.Label>
                   <Form.Control type="text" placeholder="format: day-month-year"{...register("startDate", { required: true })} />

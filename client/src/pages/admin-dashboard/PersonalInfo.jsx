@@ -82,7 +82,7 @@ const PersonalInfo = () => {
               <div className="row justify-content-between mb-4">
                 <Form.Group
                   className="mb-3 col-lg-6 ps-0 "
-                  controlId="exampleForm.ControlInput1"
+                  controlId="firstName"
                 >
                   <Form.Label>First Name <span className="text-danger">*</span> </Form.Label>
                   <Form.Control
@@ -97,7 +97,7 @@ const PersonalInfo = () => {
                 </Form.Group>
                 <Form.Group
                   className="mb-3 ps-0 col-lg-6"
-                  controlId="exampleForm.ControlInput2"
+                  controlId="lastName"
                 >
                   <Form.Label>Last Name <span className="text-danger">*</span> </Form.Label>
                   <Form.Control
@@ -115,7 +115,7 @@ const PersonalInfo = () => {
               <div className="row justify-content-between mb-4">
                 <Form.Group
                   className="mb-3 col-lg-6 ps-0 "
-                  controlId="exampleForm.ControlInput1"
+                  controlId="mobileNumber"
                 >
                   <Form.Label>Mobile Number <span className="text-danger">*</span> </Form.Label>
                   <Form.Control
@@ -130,7 +130,7 @@ const PersonalInfo = () => {
                 </Form.Group>
                 <Form.Group
                   className="mb-3 ps-0 col-lg-6"
-                  controlId="exampleForm.ControlInput3"
+                  controlId="email"
                 >
                   <Form.Label> Email Address <span className="text-danger">*</span> </Form.Label>
                   <Form.Control
@@ -148,7 +148,7 @@ const PersonalInfo = () => {
               <div className="row justify-content-between mb-4">
                 <Form.Group
                   className="mb-3 col-lg-6 ps-0 "
-                  controlId="exampleForm.ControlInput1"
+                  controlId="dateOfBirth"
                 >
                   <Form.Label>Date of Birth <span className="text-danger">*</span> </Form.Label>
                   <Form.Control
@@ -162,9 +162,9 @@ const PersonalInfo = () => {
                   </span>
                 </Form.Group>
                 <Form.Group className="mb-3 col-lg-6 ps-0">
-                  <Form.Label htmlFor="">Marital Status <span className="text-danger">*</span> </Form.Label>
+                  <Form.Label htmlFor="maritalStatus">Marital Status <span className="text-danger">*</span> </Form.Label>
                   <Form.Select
-                    id=""
+                    id="maritalStatus"
                     className="personal-info-wrapper-select"
                     {...register("maritalStatus", { required: true })}
                   >
@@ -183,9 +183,9 @@ const PersonalInfo = () => {
 
               <div className="row justify-content-between mb-4">
                 <Form.Group className="mb-3 col-lg-6 ps-0">
-                  <Form.Label htmlFor="">Gender <span className="text-danger">*</span> </Form.Label>
+                  <Form.Label htmlFor="gender">Gender <span className="text-danger">*</span> </Form.Label>
                   <Form.Select
-                    id=""
+                    id="gender"
                     className="personal-info-wrapper-select"
                     {...register("gender", { required: true })}
                   >
@@ -202,7 +202,7 @@ const PersonalInfo = () => {
                 </Form.Group>
                 <Form.Group
                   className="mb-3 col-lg-6 ps-0"
-                  controlId="exampleForm.ControlInput1"
+                  controlId="address"
                 >
                   <Form.Label>Address <span className="text-danger">*</span> </Form.Label>
                   <Form.Control

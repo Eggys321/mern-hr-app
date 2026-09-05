@@ -129,14 +129,14 @@ const Settings = () => {
                   <div>
                     <Form.Group
                       className="mb-3"
-                      controlId="exampleForm.ControlInput1"
+                      controlId="fullName"
                     >
                       <Form.Label className="settings-form-label">Full Name</Form.Label>
                       <Form.Control className="section-form-input" type="text" placeholder="Eggys" disabled  value={profile.fullName || ''}/>
                     </Form.Group>
                     <Form.Group
                       className="mb-3"
-                      controlId="exampleForm.ControlInput1"
+                      controlId="email"
                     >
                       <div className="d-flex justify-content-between">
 
@@ -225,7 +225,7 @@ const Settings = () => {
                 <div className="col-md-7">
                   <div>
                     <h6>Profile pic</h6>
-                    <img src={photoPreview || profile.profileImage || profilePic} alt="profile-pic" />
+                    <img src={photoPreview || profile.profileImage || profilePic} alt="Profile picture" />
                     <p>Your profile pic will be visible next to your name in your profile.  Your image should be at least 200x200px and must be in JPG or PNG format.</p>
                     <Form.Control
                       type="file"

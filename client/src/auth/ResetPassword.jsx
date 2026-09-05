@@ -74,12 +74,12 @@ const ResetPassword = () => {
           <div className="text-center">
             <div className="d-flex justify-content-center align-items-center gap-2">
               <div>
-                <img src={navLogo} alt="nav-logo" />
+                <img src={navLogo} alt="nav-logo" width="46" height="45" />
               </div>
               <h1 className="pt-2">HR Manager</h1>
             </div>
           </div>
-          <h3 className="py-2">Reset password</h3>
+          <h2 className="py-2">Reset password</h2>
           <Form.Group className="" controlId="formBasicPassword">
             <div className="position-relative">
               <img

@@ -55,24 +55,24 @@ const EditProfileModal = (props) => {
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={(e) => updateProfile(e, props.selectedEmployee._id)}>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Group className="mb-3" controlId="editFirstName">
               <Form.Label>First Name</Form.Label>
               <Form.Control type="text" placeholder="Enter Name" autoFocus value={firstName} onChange={(e)=>setFirstName(e.target.value)} />
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Group className="mb-3" controlId="editLastName">
               <Form.Label>Last Name</Form.Label>
               <Form.Control type="text" placeholder="Enter Name" autoFocus value={lastName} onChange={(e)=>setLastName(e.target.value)} />
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Group className="mb-3" controlId="editEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control type="email" placeholder="Enter Name" autoFocus value={email} onChange={(e)=>setEmail(e.target.value)}/>
             </Form.Group>
 
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="">Gender</Form.Label>
-              <Form.Select id="" className="new-team-wrapper-select" value={maritalStatus}
+            <Form.Group className="mb-3" controlId="editMaritalStatus">
+              <Form.Label>Gender</Form.Label>
+              <Form.Select className="new-team-wrapper-select" value={maritalStatus}
             onChange={(e) => setMaritalStatus(e.target.value)}>
                 <option disabled selected>
                   Select
@@ -84,9 +84,9 @@ const EditProfileModal = (props) => {
 
 
 
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="">Role</Form.Label>
-              <Form.Select id="" className="new-team-wrapper-select" value={role}
+            <Form.Group className="mb-3" controlId="editRole">
+              <Form.Label>Role</Form.Label>
+              <Form.Select className="new-team-wrapper-select" value={role}
             onChange={(e) => setRole(e.target.value)}>
                 <option disabled selected>
                   Select

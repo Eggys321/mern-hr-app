@@ -69,9 +69,14 @@ export const AuthProvider = ({ children }) => {
       }
     };
     verifyUser();
-    getCounts();
-    getLeaveHistory()
-
+    // Both of these hit endpoints that need a logged-in user (one is even
+    // admin-only) - calling them unconditionally meant every visit to the
+    // sign-in page (no token yet) fired two doomed requests that just
+    // logged CORS/401 errors to the console for nothing.
+    if (token) {
+      getCounts();
+      getLeaveHistory();
+    }
   }, []);
 
   return (

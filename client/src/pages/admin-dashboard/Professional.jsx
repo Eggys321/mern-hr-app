@@ -54,7 +54,7 @@ const Professional = () => {
               <div className="row justify-content-between mb-4">
                 <Form.Group
                   className="mb-3 col-lg-6 ps-0 "
-                  controlId="exampleForm.ControlInput1"
+                  controlId="officeOfEmployment"
                 >
                   <Form.Label>Office of Employment <span className="text-danger">*</span> </Form.Label>
                   <Form.Control type="text" placeholder="Enter" {...register("officeOfEmployment", { required: true })}
@@ -66,11 +66,10 @@ const Professional = () => {
                 </Form.Group>
                 <Form.Group
                   className="mb-3 ps-0 col-lg-6"
-                  controlId="exampleForm.ControlInput2"
+                  controlId="jobTitle"
                 >
                   <Form.Label>Job Title <span className="text-danger">*</span> </Form.Label>
                   <Form.Select
-                    id=""
                     className="personal-info-wrapper-select"
                     {...register("jobTitle", { required: true })}
                   >
@@ -94,9 +93,9 @@ const Professional = () => {
 
 
               <div className="row justify-content-between mb-4">
-                <Form.Group className="mb-3 col-lg-6 ps-0">
-                  <Form.Label htmlFor="">Department <span className="text-danger">*</span> </Form.Label>
-                  <Form.Select id="" className="personal-info-wrapper-select"  {...register("department", { required: true })}>
+                <Form.Group className="mb-3 col-lg-6 ps-0" controlId="department">
+                  <Form.Label>Department <span className="text-danger">*</span> </Form.Label>
+                  <Form.Select className="personal-info-wrapper-select"  {...register("department", { required: true })}>
                     <option disabled selected value="">
                       Select
                     </option>
@@ -115,9 +114,9 @@ const Professional = () => {
                   </span>
                 </Form.Group>
 
-                <Form.Group className="mb-3 col-lg-6 ps-0">
-                  <Form.Label htmlFor="">Employment Status <span className="text-danger">*</span> </Form.Label>
-                  <Form.Select id="" className="personal-info-wrapper-select" {...register("employmentStatus", { required: true })}>
+                <Form.Group className="mb-3 col-lg-6 ps-0" controlId="employmentStatus">
+                  <Form.Label>Employment Status <span className="text-danger">*</span> </Form.Label>
+                  <Form.Select className="personal-info-wrapper-select" {...register("employmentStatus", { required: true })}>
                     <option disabled selected>
                       Select
                     </option>

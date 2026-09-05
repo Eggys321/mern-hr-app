@@ -1,6 +1,7 @@
 @font-face {
     font-family: neurial-grotesk;
     src: url("../fonts/Fontspring-DEMO-neurialgrotesk-regular.otf");
+    font-display: swap;
 }
 
 .main-auth {
@@ -34,7 +35,7 @@
   font-size: 27.03px;
   font-weight: 700;
 }
-.sign-in-inner h3 {
+.sign-in-inner h2 {
   font-family: var(--ff-inter);
   font-size: 24px;
   font-weight: 600;

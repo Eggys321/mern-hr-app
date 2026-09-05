@@ -51,13 +51,13 @@ const ForgotPassword = () => {
           <div className="">
             <div className="d-flex justify-content-center align-items-center gap-2">
               <div>
-                <img src={navLogo} alt="nav-logo" />
+                <img src={navLogo} alt="nav-logo" width="46" height="45" />
               </div>
               <h1 className="pt-2">HR Manager</h1>
             </div>
           </div>
           <Form.Group className="" controlId="formBasicEmail">
-            <h3 className="py-2">Forgot password <span className="text-danger fs-5">*</span></h3>
+            <h2 className="py-2">Forgot password <span className="text-danger fs-5">*</span></h2>
             <Form.Control
               className="input"
               type="email"

@@ -131,7 +131,7 @@ const EmployeeSettings = () => {
                 <div>
                   <Form.Group
                     className="mb-3"
-                    controlId="exampleForm.ControlInput1"
+                    controlId="fullName"
                   >
                     <Form.Label className="settings-form-label">
                       Full Name
@@ -146,7 +146,7 @@ const EmployeeSettings = () => {
                   </Form.Group>
                   <Form.Group
                     className="mb-3"
-                    controlId="exampleForm.ControlInput1"
+                    controlId="email"
                   >
                     <div className="d-flex justify-content-between">
                       <Form.Label className="settings-form-label">
@@ -238,7 +238,7 @@ const EmployeeSettings = () => {
               <div className="col-md-7">
                 <div>
                   <h6>Profile pic</h6>
-                  <img src={photoPreview || profile.profileImage || profilePic} alt="profile-pic" />
+                  <img src={photoPreview || profile.profileImage || profilePic} alt="Profile picture" />
                   <p>
                     Your profile pic will be visible next to your name in your
                     profile. Your image should be at least 200x200px and must be

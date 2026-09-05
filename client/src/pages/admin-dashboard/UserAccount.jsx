@@ -89,7 +89,7 @@ const navigate = useNavigate()
             <div className="row justify-content-between mb-4">
               <Form.Group
                 className="mb-3 col-lg-6 ps-0 "
-                controlId="exampleForm.ControlInput1"
+                controlId="password"
               >
                 <Form.Label>Password <span className="text-danger">*</span> </Form.Label>
                 <Form.Control
@@ -104,7 +104,7 @@ const navigate = useNavigate()
               </Form.Group>
               <Form.Group
                 className="mb-3 ps-0 col-lg-6"
-                controlId="exampleForm.ControlInput2"
+                controlId="confirmPassword"
               >
                 <Form.Label>Confirm Password <span className="text-danger">*</span> </Form.Label>
                 <Form.Control

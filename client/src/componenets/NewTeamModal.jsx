@@ -66,7 +66,7 @@ const NewTeamModal = (props) => {
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Group className="mb-3" controlId="departmentName">
               <Form.Label>Department Name</Form.Label>
               <Form.Control
                 type="text"
@@ -76,10 +76,9 @@ const NewTeamModal = (props) => {
                 onChange={(e) => setName(e.target.value)}
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="">Dept Manager</Form.Label>
+            <Form.Group className="mb-3" controlId="deptManager">
+              <Form.Label>Dept Manager</Form.Label>
               <Form.Select
-                id=""
                 className="new-team-wrapper-select"
                 value={manager}
                 onChange={(e) => setManager(e.target.value)}
