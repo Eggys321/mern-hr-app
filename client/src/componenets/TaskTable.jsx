@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
-import { taskBoardTableData } from "../db";
 import "../styles/TaskTable.css";
-import axios from "axios";
 import { Loader } from "../utils/Loader";
-import Button from 'react-bootstrap/Button';
+import apiClient from "../utils/apiClient";
 import Modal from 'react-bootstrap/Modal';
+import ConfirmModal from "./ConfirmModal";
 import toast from "react-hot-toast"
 import { useAuth } from "../context/AuthContext";
 import { MdGridView } from "react-icons/md";
@@ -19,24 +18,19 @@ const TaskTable = () => {
   const [error, setError] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [taskPendingDelete, setTaskPendingDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const {getCounts} = useAuth()
-
-  const token = localStorage.getItem("hr-token");
 
   const getTasks = async()=>{
     try {
       setIsLoading(true)
-      setError(null); 
+      setError(null);
 
-      const req = await axios.get("https://mern-hr-app.onrender.com/api/task",{
-        headers:{
-          Authorization: `Bearer ${token}`,
-        }
-      })
+      const req = await apiClient.get("/api/task")
       setData(req.data.tasks)
     } catch (error) {
       setError('Error fetching tasks');
-      console.error(error);
     }finally{
       setIsLoading(false)
     }
@@ -46,40 +40,31 @@ const TaskTable = () => {
     try {
       setIsLoading(true);
       setError(null);
-      const req = await axios.get(`https://mern-hr-app.onrender.com/api/task/${id}`,{
-        headers:{
-          Authorization: `Bearer ${token}`,
-        }
-      })
+      const req = await apiClient.get(`/api/task/${id}`)
       setSelectedTask(req.data.task);
       setShowModal(true);
-   
+
     } catch (error) {
-    
+      toast.error("Failed to load task details");
     }finally {
       setIsLoading(false);
     }
   }
-  const deleteTask = async(id)=>{
+  const confirmDeleteTask = async()=>{
+    if (!taskPendingDelete) return;
+    setIsDeleting(true);
     try {
-      setIsLoading(true);
-      setError(null);
-      const req = await axios.delete(`https://mern-hr-app.onrender.com/api/task/${id}`,{
-        headers:{
-          Authorization: `Bearer ${token}`,
-        }
-      })
-    
+      const req = await apiClient.delete(`/api/task/${taskPendingDelete}`)
       if (req.data.success){
-       toast.success(req.data.message) 
+       toast.success(req.data.message)
       }
-      setData(data.filter((existingDatum) => existingDatum._id !== id));
+      setData(data.filter((existingDatum) => existingDatum._id !== taskPendingDelete));
       getCounts()
-   
     } catch (error) {
-    
-    }finally {
-      setIsLoading(false);
+      toast.error(error.response?.data?.errMsg || "Failed to delete task");
+    } finally {
+      setIsDeleting(false);
+      setTaskPendingDelete(null);
     }
   }
   useEffect(()=>{
@@ -96,6 +81,9 @@ const TaskTable = () => {
     <main className="my-5 task-table-wrapper task-table-container">
       <h1 className="pb-4">Taskboard</h1>
       <div className="task-table">
+        {data.length === 0 ? (
+          <p className="text-muted py-4">No tasks yet. Create one with "New Task" above.</p>
+        ) : (
         <Table role="button"  responsive>
           <thead className="task-table-wrapper-head">
             <tr>
@@ -119,18 +107,14 @@ const TaskTable = () => {
           {data?.map((task) => {
             return (
               <tbody key={task?._id} className="task-table-body">
-                
+
                 <tr>
-                 
+
                   <td>
                     <h6 className="task-table-title pt-1">{task?.title}</h6>
                   </td>
                   <td>
                     <div className="d-flex">
-                      {/* <img src={task.teamPhoto.teamPhoto1} alt="" />
-                      <img src={task.teamPhoto.teamPhoto2} alt="" />
-                      <img src={task.teamPhoto.teamPhoto3} alt="" />
-                      <img src={task.teamPhoto.teamPhoto4} alt="" /> */}
                       {task?.assignedMembers.slice(0,2).map((img)=>{
                         return(
                           <div key={img?._id}>
@@ -163,26 +147,19 @@ const TaskTable = () => {
                     </p>
                   </td>
                   <td className="d-flex gap-2">
-                    {/* <input
-                      type="checkbox"
-                      className="task-table-body-check-box"
-                      role="button"
-                    /> */}
                   <p className="text-success" role="button" onClick={() => getTaskById(task._id)}>
                   <MdGridView fontSize={22}/>
 
                   </p>
-                  <p className="text-danger" role="button" onClick={()=>deleteTask(task._id)}><MdDelete  fontSize={22} />
+                  <p className="text-danger" role="button" onClick={()=>setTaskPendingDelete(task._id)}><MdDelete  fontSize={22} />
                   </p>
                   </td>
-                  {/* <div className="d-flex gap-2">
-
-                  </div> */}
                 </tr>
               </tbody>
             );
           })}
         </Table>
+        )}
         <Modal show={showModal} onHide={() => setShowModal(false)} centered       size="lg"
         >
           <Modal.Header closeButton>
@@ -200,7 +177,7 @@ const TaskTable = () => {
                 <p className=" modal-wrapper-title">Team: </p>
                 {selectedTask.assignedMembers.map((img)=>{
                   return(
-                    <div className="task-profile-img">
+                    <div className="task-profile-img" key={img?._id || img?.profileImage}>
                 <img src={img?.profileImage} alt="" className="" />
                     </div>
                   )
@@ -208,7 +185,6 @@ const TaskTable = () => {
                 </div>
               </div>
                 </div>
-                {/* <p><strong>Assigned Members:</strong> {selectedTask.assignedMembers.map(member => `${member.firstName} ${member.lastName}`).join(', ')}</p> */}
                 <div className="row">
 
                 <p className="col-lg-6 modal-wrapper-title">Start Date: <span className="modal-wrapper-value">{selectedTask.startDate.slice(0, 10)} </span> </p>
@@ -224,12 +200,16 @@ const TaskTable = () => {
               <Loader />
             )}
           </Modal.Body>
-          {/* <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModal(false)}>
-              Close
-            </Button>
-          </Modal.Footer> */}
         </Modal>
+        <ConfirmModal
+          show={!!taskPendingDelete}
+          title="Delete this task?"
+          message="This can't be undone. The task will be permanently removed."
+          confirmText="Delete Task"
+          onConfirm={confirmDeleteTask}
+          onCancel={() => setTaskPendingDelete(null)}
+          isConfirming={isDeleting}
+        />
       </div>
     </main>
   );

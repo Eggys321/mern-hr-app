@@ -3,17 +3,16 @@ import { NavLink,useNavigate } from "react-router-dom";
 import Nav from "../../layout/Nav";
 import Form from "react-bootstrap/Form";
 import MyButton from "../../componenets/MyButton";
-import axios from "axios";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { professional } from "../../utils/ValidationSchema";
 import toast from "react-hot-toast";
+import apiClient from "../../utils/apiClient";
 
 const Professional = () => {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const token = localStorage.getItem("hr-token")
   const navigate = useNavigate();
   const {
     register,
@@ -35,14 +34,8 @@ const Professional = () => {
     const fetchDepartments = async () => {
       try {
         setLoading(true)
-        const response = await axios.get("https://mern-hr-app.onrender.com/api/department/all-departments",{
-          headers:{
-            Authorization:`Bearer ${token}`
-          }
-        });
-        console.log(response.data.departments);
-        
-        setDepartments(response.data.departments); 
+        const response = await apiClient.get("/api/department/all-departments");
+        setDepartments(response.data.departments);
       } catch (err) {
         setError("Failed to fetch departments");
       } finally {
@@ -97,10 +90,9 @@ const Professional = () => {
                   </span>
                 </Form.Group>
               </div>
-              
-              
-              {/* dept and employment status */}
-              {/* start ================================================ */}
+
+
+
               <div className="row justify-content-between mb-4">
                 <Form.Group className="mb-3 col-lg-6 ps-0">
                   <Form.Label htmlFor="">Department <span className="text-danger">*</span> </Form.Label>
@@ -115,17 +107,14 @@ const Professional = () => {
                       {department.name}
                     </option>
                   ))}
-                    {/* <option>Product</option>
-                    <option>Admin</option>
-                    <option>Marketing</option>
-                    <option>Operations</option> */}
+
                   </Form.Select>
                   <span className="text-danger fs-6 text-start fw-bold">
                     {" "}
                     {errors.department?.message}
                   </span>
                 </Form.Group>
-                {/* end ====================================================*/}
+
                 <Form.Group className="mb-3 col-lg-6 ps-0">
                   <Form.Label htmlFor="">Employment Status <span className="text-danger">*</span> </Form.Label>
                   <Form.Select id="" className="personal-info-wrapper-select" {...register("employmentStatus", { required: true })}>
@@ -142,10 +131,8 @@ const Professional = () => {
                   </span>
                 </Form.Group>
               </div>
-           
-              {/* <div className="mt-4 d-flex gap-3">
-                <MyButton/>
-              </div> */}
+
+
               <div className="row">
               <Form.Group className="col-lg-12  ps-0">
               <div className="mt-4 col-lg-12 ps-0 gap-3 d-flex flex-column-reverse flex-md-row gap-1 w-100">

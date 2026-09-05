@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { Link, Outlet, NavLink, useMatch, useLocation } from "react-router-dom";
 import "../../styles/Employees.css";
 import Button from "react-bootstrap/esm/Button";
 import plusSign from "../../assets/plus.svg";
 import NewTeamModal from "../../componenets/NewTeamModal";
+import { Loader } from "../../utils/Loader";
 
 const Employees = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -72,7 +73,9 @@ const Employees = () => {
         <NewTeamModal show={modalShow} onHide={() => setModalShow(false)} />
       </main>
 
-      <Outlet />
+      <Suspense fallback={<div className="py-5 d-flex justify-content-center"><Loader /></div>}>
+        <Outlet />
+      </Suspense>
     </>
   );
 };

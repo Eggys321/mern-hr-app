@@ -11,6 +11,7 @@ import vissibilityOnIcon from "../assets/visibility_24dp_5F6368_FILL0_wght400_GR
 import vissibilityOffIcon from "../assets/visibility_off_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg";
 import toast from "react-hot-toast";
 import { Loader } from "../utils/Loader";
+import apiClient from "../utils/apiClient";
 
 const ResetPassword = () => {
   const [isReveal, setIsReveal] = useState(false);
@@ -34,25 +35,15 @@ const ResetPassword = () => {
     setIsClicked(true);
 
     try {
-      const req = await fetch(
-        `https://mern-hr-app.onrender.com/api/auth/resetpassword/${resetToken}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        }
-      );
-      const res = await req.json();
-      if (!res.success) {
-        toast.error(res.message);
-      }
-      if (res.success) {
-        toast.success(res.message);
+      const res = await apiClient.put(`/api/auth/resetpassword/${resetToken}`, data);
+      if (res.data.success) {
+        toast.success(res.data.message);
         navigate("/auth/sign-in");
+      } else {
+        toast.error(res.data.message);
       }
     } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to reset password");
     } finally {
       setIsClicked(false);
     }

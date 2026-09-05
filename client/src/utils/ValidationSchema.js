@@ -1,6 +1,5 @@
 import * as yup from "yup";
 
-// for sign in
 export const signInSchema = yup
   .object({
     email: yup
@@ -13,9 +12,6 @@ export const signInSchema = yup
       .min(8, "min lenght of password should be at least 8 chrs"),
   })
   .required();
-
-
-  // for forgot password
 export const forgotPasswordSchema = yup
 .object({
   email: yup
@@ -25,7 +21,6 @@ export const forgotPasswordSchema = yup
 })
 .required();
 
-// for resetpasswordlink
 export const resetPwdLinkSchema = yup
   .object({
     password: yup
@@ -40,8 +35,6 @@ export const resetPwdLinkSchema = yup
       .oneOf([yup.ref("password")], "Password do not match"),
   })
   .required();
-  // for personal info
-
   export const personalInformation = yup.object().shape({
     firstName: yup.string().required("First Name is required"),
     lastName: yup.string().required("Last Name is required"),

@@ -1,33 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import Table from "react-bootstrap/Table";
-import { employeeLeaveHistory } from '../../db';
 import "../../styles/EmployeeLeaveTable.css"
-import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
+import apiClient from "../../utils/apiClient";
 import { Loader } from '../../utils/Loader';
 const EmployeeLeaveTable = () => {
   const [leave,setLeave] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const {createLeave} = useAuth()
-  const token = localStorage.getItem("hr-token")
   useEffect(()=>{
     const getLeaveHistory = async()=>{
-      
       try {
         setLoading(true);
-        const req = await axios.get("https://mern-hr-app.onrender.com/api/leave/employee/leaves",{
-          headers:{
-            Authorization:`Bearer ${token}`
-          }
-        })
-        console.log(req.data);
+        const req = await apiClient.get("/api/leave/employee/leaves")
         setLeave(req.data)
-      
-        
-      } catch (error) {
-        
-      }finally{
+      } catch (error) {}finally{
         setLoading(false);
 
       }
@@ -44,6 +30,9 @@ const EmployeeLeaveTable = () => {
     <>
  <main className="employee-leave-table-wrapper employee-table-container mt-4">
         <div className="employee-leave-table">
+          {leave.length === 0 ? (
+            <p className="text-muted py-4">You haven't applied for any leave yet.</p>
+          ) : (
           <Table responsive="sm" hover role="button">
             <thead className="employee-leave-table-wrapper-head">
               <tr>
@@ -65,9 +54,9 @@ const EmployeeLeaveTable = () => {
                 </th>
               </tr>
             </thead>
-            {leave.map((employee) => {
+            {leave.map((employee, index) => {
               return (
-                <tbody key={employee.id} className="employee-leave-table-body">
+                <tbody key={employee._id || index} className="employee-leave-table-body">
                   <tr>
                     <td>
                       <div className="d-flex gap-2 align-items-center ">
@@ -126,7 +115,7 @@ const EmployeeLeaveTable = () => {
               );
             })}
           </Table>
-         
+          )}
         </div>
       </main>    </>
   )

@@ -19,65 +19,30 @@ export const applyForLeave = async (req, res) => {
       });
   
       await USER.findByIdAndUpdate(userId, { $push: { leaves: newLeave._id } });
-      // Notify admins and super-admins
       const admins = await USER.find({ role: { $in: ["admin", "super-admin"] } });
       for (const admin of admins) {
-          await sendLeaveRequestMail({
-            to: admin.email,
-            employeeName: `${req.user.firstName} ${req.user.lastName}`,
-            leaveType,
-            startDate,
-            endDate,
-            duration: calculateDuration(startDate, endDate),
-            clientUrl: `https://mern-hr-app.vercel.app/admin-dashboard/leaveboard`
-        });
+          try {
+            await sendLeaveRequestMail({
+              to: admin.email,
+              employeeName: `${req.user.firstName} ${req.user.lastName}`,
+              leaveType,
+              startDate,
+              endDate,
+              duration: calculateDuration(startDate, endDate),
+              clientUrl: `${process.env.CLIENT_URL}/admin-dashboard/leaveboard`
+          });
+        } catch (emailError) {
+          console.error(`Failed to notify admin ${admin.email} of new leave request:`, emailError);
+        }
     }
-    
+
     res.status(201).json({success:true,message:"Leave request sent,awaiting decision from admin.",newLeave});
 } catch (error) {
     res.status(400).json({ error: error.message });
 }
 };
 
-export const approveOrDeclineLeave = async (req, res) => {
-    const { leaveId } = req.params;
-    const { status } = req.body;
-        const { userId,lastName,firstName } = req.user;  
-
-  
-    if (!["approved", "declined"].includes(status)) {
-      return res.status(400).json({ error: "Invalid status. Must be 'approved' or 'declined'." });
-    }
-  
-    try {
-      const leave = await LEAVE.findByIdAndUpdate(leaveId, { status,approvedBy: userId  }, { new: true }).populate("appliedBy","approvedBy");
-  
-      if (!leave) {
-        return res.status(404).json({ error: "Leave request not found." });
-      }
-  
-      const employee = leave.appliedBy;
-      const duration = calculateDuration(leave.startDate, leave.endDate);
-  
-      // Send email notification to the employee
-      await sendLeaveStatusUpdateMail({
-        to: employee.email,
-        employeeName: `${employee.firstName} ${employee.lastName}`,
-        leaveType: leave.leaveType,
-        startDate: leave.startDate,
-        endDate: leave.endDate,
-        duration,
-        status,
-      });
-  
-      res.status(200).json({ message: `Leave request ${status} and notification sent to ${employee.email}.` });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
-  
-// approve
-  export const approveLeave = async (req, res) => {
+export const approveLeave = async (req, res) => {
     const { leaveId } = req.params;
     const { userId } = req.user;  
   
@@ -94,19 +59,22 @@ export const approveOrDeclineLeave = async (req, res) => {
   
       const employee = leave.appliedBy;
       const duration = calculateDuration(leave.startDate, leave.endDate);
-  
-      // Send approval email to the employee
-      await sendLeaveStatusUpdateMail({
-        to: employee.email,
-        employeeName: `${employee.firstName} ${employee.lastName}`,
-        leaveType: leave.leaveType,
-        startDate: leave.startDate,
-        endDate: leave.endDate,
-        duration,
-        status: "approved",
-        _id:leave._id
-      });
-  
+
+      try {
+        await sendLeaveStatusUpdateMail({
+          to: employee.email,
+          employeeName: `${employee.firstName} ${employee.lastName}`,
+          leaveType: leave.leaveType,
+          startDate: leave.startDate,
+          endDate: leave.endDate,
+          duration,
+          status: "approved",
+          _id:leave._id
+        });
+      } catch (emailError) {
+        console.error(`Failed to email ${employee.email} about leave approval:`, emailError);
+      }
+
       res.status(200).json({success:true, message: `Leave request approved and notification sent to ${employee.email}.` });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -114,13 +82,11 @@ export const approveOrDeclineLeave = async (req, res) => {
   };
 
 
-//   decline
 export const declineLeave = async (req, res) => {
     const { leaveId } = req.params;
     const { userId } = req.user;
   
     try {
-      // Update the leave request status to declined
       const leave = await LEAVE.findByIdAndUpdate(
         leaveId,
         { status: "declined", approvedBy: userId },
@@ -133,18 +99,21 @@ export const declineLeave = async (req, res) => {
   
       const employee = leave.appliedBy;
       const duration = calculateDuration(leave.startDate, leave.endDate);
-  
-      // Send decline email to the employee
-      await sendLeaveStatusUpdateMail({
-        to: employee.email,
-        employeeName: `${employee.firstName} ${employee.lastName}`,
-        leaveType: leave.leaveType,
-        startDate: leave.startDate,
-        endDate: leave.endDate,
-        duration,
-        status: "declined",
-      });
-  
+
+      try {
+        await sendLeaveStatusUpdateMail({
+          to: employee.email,
+          employeeName: `${employee.firstName} ${employee.lastName}`,
+          leaveType: leave.leaveType,
+          startDate: leave.startDate,
+          endDate: leave.endDate,
+          duration,
+          status: "declined",
+        });
+      } catch (emailError) {
+        console.error(`Failed to email ${employee.email} about leave decline:`, emailError);
+      }
+
       res.status(200).json({success:true, message: `Leave request declined and notification sent to ${employee.email}.` });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -176,7 +145,7 @@ export const getAllLeaves = async (req, res) => {
       formattedLeaves.sort((a, b) => {
         if (a.status === "pending" && b.status !== "pending") return -1;
         if (a.status !== "pending" && b.status === "pending") return 1;
-        return 0; // Maintain original order if statuses are the same
+        return 0;
       });
         res.status(200).json({success:true,message:"all leaves",formattedLeaves});
 
@@ -213,7 +182,6 @@ export const getSingleLeave = async (req, res) => {
         return res.status(404).json({ error: "Leave request not found" });
       }
   
-      // Format response with duration included
       const leaveDetails = {
         leaveId: leave._id,
         employee: leave.appliedBy
@@ -243,7 +211,6 @@ export const getSingleLeave = async (req, res) => {
     }
   };
 
-//   employee getting his leaves
 export const getEmployeeLeaves = async (req, res) => {
     const { userId } = req.user; 
   

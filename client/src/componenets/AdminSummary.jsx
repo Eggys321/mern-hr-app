@@ -1,32 +1,19 @@
 import React, { useEffect, useState } from "react";
 import "../styles/AdminSummary.css";
-import { allEmployeesList, eventLenght } from "../db";
 import TaskTable from "./TaskTable";
-import axios from "axios";
 import totalEmployeesImg from "../assets/allEmployees.svg";
 import totalTasksImg from "../assets/allTasks.svg";
 import totalLeaves from "../assets/allLeaves.svg";
-import { useAuth } from "../context/AuthContext";
+import apiClient from "../utils/apiClient";
 
 const AdminSummary = () => {
   const [data,setData] = useState([])
-  const token = localStorage.getItem("hr-token")
 
-//  const {data} = useAuth()
  const getCounts = async ()=>{
   try {
-    const req = await axios.get("https://mern-hr-app.onrender.com/api/count",{
-      headers:{
-        Authorization: `Bearer ${token}`,
-      }
-    })
-    // const res = await req.json();
-
+    const req = await apiClient.get("/api/count")
     setData(req.data.eventLenght)
-    
-  } catch (error) {
-    
-  }
+  } catch (error) {}
 }
 
 useEffect(()=>{

@@ -1,31 +1,24 @@
 import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
-import { allLeaveList } from "../db";
 import "../styles/LeaveTable.css";
-import axios from "axios";
 import "../styles/EmployeeTable.css";
 import { Loader } from "../utils/Loader";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/esm/Button";
 import MyButton from "./MyButton";
 import toast from "react-hot-toast";
+import apiClient from "../utils/apiClient";
 
-const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
+const LeaveTable = () => {
   const [data, setData] = useState([]);
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const token = localStorage.getItem("hr-token");
   const getLeaveById = async (leaveId) => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `https://mern-hr-app.onrender.com/api/leave/${leaveId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await apiClient.get(`/api/leave/${leaveId}`);
       setSelectedLeave(response.data);
       setShowModal(true);
     } catch (error) {
@@ -37,18 +30,9 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
   const fetchLeave = async () => {
     try {
       setLoading(true);
-      const req = await axios.get(
-        "https://mern-hr-app.onrender.com/api/leave/all-leaves",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      const req = await apiClient.get("/api/leave/all-leaves");
       setData(req.data.formattedLeaves);
-    } catch (error) {
-    } finally {
+    } catch (error) {} finally {
       setLoading(false);
     }
   };
@@ -59,48 +43,27 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
       return;
     }
     try {
-      const req = await fetch(
-        `https://mern-hr-app.onrender.com/api/leave/${leaveId}/approve`,
-        
-        {
-          method:"PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type":"application/json"
-          },
-        }
-      );
-      const res = await req.json();
-      if(res.success){
-        toast.success(res.message)
+      const res = await apiClient.patch(`/api/leave/${leaveId}/approve`);
+      if(res.data.success){
+        toast.success(res.data.message)
         fetchLeave()
         setShowModal(false);
-
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.error(error.response?.data?.errMsg || "Failed to approve leave");
+    }
   };
   const declineLeave = async (leaveId) => {
-   
     try {
-      const req = await fetch(
-        `https://mern-hr-app.onrender.com/api/leave/${leaveId}/decline`,
-        
-        {
-          method:"PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type":"application/json"
-          },
-        }
-      );
-      const res = await req.json();
-      if(res.success){
-        toast.success(res.message)
+      const res = await apiClient.patch(`/api/leave/${leaveId}/decline`);
+      if(res.data.success){
+        toast.success(res.data.message)
         fetchLeave()
         setShowModal(false);
-
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.error(error.response?.data?.errMsg || "Failed to decline leave");
+    }
   };
     useEffect(() => {
   
@@ -208,7 +171,7 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
               );
             })}
           </Table>
-          {/* Modal for Leave Details */}
+
           <Modal
             show={showModal}
             onHide={() => setShowModal(false)}
@@ -271,7 +234,6 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
                           variant="primary"
                           className="save-and-continue-btn"
                           text="Approve"
-                          // disabled={isSubmitting}
                         />
                         <MyButton
                           onClick={() =>
@@ -281,7 +243,6 @@ const LeaveTable = ({ Name, Email, Team, Supervisor, Status }) => {
                           text="Decline"
                           className="cancel-btn mb-3"
                           type="submit"
-                          // disabled={isSubmitting}
                         />
                         
                         </>

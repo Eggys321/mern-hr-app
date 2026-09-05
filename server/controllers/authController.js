@@ -5,7 +5,6 @@ import { v2 as cloudinary } from "cloudinary";
 import crypto from "crypto";
 import DEPARTMENT from "../models/departmentModel.js";
 
-// sign-up
 export const signup = async (req, res) => {
  
   
@@ -73,12 +72,6 @@ export const signup = async (req, res) => {
       res.status(400).json({ success: false, errMsg: "phone number already exists"});
       return;
     }
-    //
-    // if (!req.files || !req.files.profileImage) {
-    //   return res
-    //     .status(400)
-    //     .json({ success: false, errMsg: "Profile image is required" });
-    // }
     const imageToBeUploaded = req.files?.profileImage?.tempFilePath || req.body.profileImage
     if(!imageToBeUploaded){
       return res.status(400).json({errMsg: 'image has to be uploaded', success: false})
@@ -94,29 +87,16 @@ export const signup = async (req, res) => {
 
     req.body.profileImage = result.secure_url;
 
-    // fs.unlinkSync(req.files.profileImage.tempFilePath);
-       const dept = await DEPARTMENT.findOne({name: department})
-  console.log(dept);
+    const dept = await DEPARTMENT.findOne({name: department})
     if (!dept) {
        return res.status(404).json({ success: false, errMsg: "Department not found." });
      }
-     
 
      const newUser = await USER.create({ ...req.body, department: dept._id });
 
-     // Find the department and add the new employee to the members array
-  
-  
-     
-    //  const dept = await DEPARTMENT.findOne({name: department})
-     
-   
- 
-     // Save the department with the new member
-   dept.members.push(newUser._id); // Add new user's ID to the members array
+     dept.members.push(newUser._id);
       await dept.save();
-    // Send a welcome email (optional)
-     const clientUrl = process.env.CLIENT_URL;
+    const clientUrl = process.env.CLIENT_URL;
  
      try {
        await sendWelcomeEmail({
@@ -128,7 +108,6 @@ export const signup = async (req, res) => {
        console.error("Error sending welcome email", emailError);
      }
  
-     //Return the success response
      res.status(201).json({
        success: true,
        message: "Employee has been successfully added, and the department has been updated.",
@@ -139,7 +118,6 @@ export const signup = async (req, res) => {
     res.status(500).json(error.message);
   }
 };
-// sign-in
 export const signIn = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -150,24 +128,19 @@ export const signIn = async (req, res) => {
     return;
   }
   try {
-    // finding a registered email address
     const user = await USER.findOne({ email });
     if (!user) {
-      res.status(404).json({ success: false, errMsg: "user not found" });
+      res.status(401).json({ success: false, errMsg: "Email or Password is Incorrect" });
       return;
     }
-    // comparing password and validating password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       res
-        .status(404)
+        .status(401)
         .json({ success: false, errMsg: "Email or Password is Incorrect" });
       return;
     }
-    // generating token
-
     const token = await user.generateToken();
-    // console.log(token);
     if (token) {
       res.status(201).json({
         success: true,
@@ -189,7 +162,6 @@ export const signIn = async (req, res) => {
   } 
 };
 
-// forgot password
 export const forgotPassword = async(req,res)=>{
   const {email} = req.body;
   try {
@@ -199,47 +171,43 @@ export const forgotPassword = async(req,res)=>{
     }
     const user = await USER.findOne({email});
     if(!user){
-      res.status(404).json({success:false,errMsg:"email not found"})
+      res.status(200).json({ success: true, message: "If that email is registered, a reset link has been sent." });
       return
     }
     const resetToken = user.getResetPasswordToken()
     await user.save()
-    res.status(201).json({
-      success: true,
-      message: "mail sent",
-    });
     const resetUrl = process.env.CLIENT_URL_RESET + resetToken;
-   
+
     try {
       await sendForgotPasswordMail({
         to: user.email,
         firstName: user.firstName,
         resetUrl,
       })
-      return
+      return res.status(200).json({
+        success: true,
+        message: "If that email is registered, a reset link has been sent.",
+      });
     } catch (error) {
-      user.getResetPasswordToken = undefined;
-      user.getResetPasswordExpire = undefined;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
       await user.save();
-      return res.status(500).json({errMsg:"Email couldnt be sent",error})
+      return res.status(500).json({success:false,errMsg:"Email couldn't be sent"})
     }
   } catch (error) {
-    res.json(error.message)
+    res.status(500).json({success:false,errMsg:error.message})
   }
-}
+};
 
- // reset password ftn
  export const resetPassword = async (req,res)=>{
   const resetPasswordToken = crypto.createHash("sha256").update(req.params.resetToken).digest("hex");
   try {
     const user = await USER.findOne({
       resetPasswordToken,
       resetPasswordExpire:{$gt:Date.now()}
-      // resetPasswordExpire:{$gt:Date('2024-12-20')}
-
     })
     if(!user){
-      return res.status(400).json({status:false,message:"invalid Reset Token"})
+      return res.status(400).json({success:false,message:"invalid Reset Token"})
     }
     user.password = req.body.password;
     user.resetPasswordToken = undefined;
@@ -247,16 +215,44 @@ export const forgotPassword = async(req,res)=>{
 
     await user.save();
     res.status(201).json({success:true,message:"Password Reset Successfull"})
-    
-  } catch (error) {
-    res.status(500).json(error.message)
-    
-  }
-}
 
-// verify
+  } catch (error) {
+    res.status(500).json({success:false,errMsg:error.message})
+
+  }
+};
+
+export const changePassword = async (req, res) => {
+  const { userId } = req.user;
+  const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+  if (!currentPassword || !newPassword || !confirmNewPassword) {
+    return res.status(400).json({ success: false, errMsg: "All fields are required" });
+  }
+  if (newPassword !== confirmNewPassword) {
+    return res.status(400).json({ success: false, errMsg: "New passwords do not match" });
+  }
+
+  try {
+    const user = await USER.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, errMsg: "User not found" });
+    }
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, errMsg: "Current password is incorrect" });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, errMsg: error.message });
+  }
+};
+
 export const verify = async(req,res)=>{
   return res.status(201).json({success:true,user:req.user})
-}
-
-
+};

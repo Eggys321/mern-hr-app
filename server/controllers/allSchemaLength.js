@@ -5,31 +5,20 @@ import LEAVE from "../models/leaveModel.js";
 
 export const allSchemaCount = async (req, res) => {
   try {
-    const users = await USER.find();
-    const depts = await DEPARTMENTS.find();
-    const tasks = await Task.find();
-    const leaves = await LEAVE.find();
-    // counts
-    const usersCount = users.length;
-    const tasksCount = tasks.length;
-    const leaveCount = leaves.length;
+    const [usersCount, deptsCount, tasksCount, leaveCount] = await Promise.all([
+      USER.countDocuments(),
+      DEPARTMENTS.countDocuments(),
+      Task.countDocuments(),
+      LEAVE.countDocuments(),
+    ]);
 
-    const eventLenght =[
-        {
-            title:"Total Employees",
-            count:users.length,
-        },
-        {
-            title:"Total Tasks",
-            count:tasks.length,
-        },
-        {
-            title:"Current Leaves",
-            count:leaveCount,
-        }
-    ] 
-    res.status(200).json({ success: true, eventLenght,usersCount,tasksCount,leaves });
+    const eventLenght = [
+      { title: "Total Employees", count: usersCount },
+      { title: "Total Tasks", count: tasksCount },
+      { title: "Current Leaves", count: leaveCount },
+    ];
+    res.status(200).json({ success: true, eventLenght, usersCount, tasksCount, deptsCount, leaveCount });
   } catch (error) {
-    res.json(error);
+    res.status(500).json({ success: false, errMsg: error.message });
   }
 };

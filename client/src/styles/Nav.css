@@ -22,7 +22,7 @@
 
 @media (max-width: 768px) {
   .nav-wrapper a {
-    /* font-size: 16px; */
+
   }
 }
 
@@ -31,7 +31,7 @@
     width: 88%;
   }
   .nav-wrapper a {
-    /* font-size: 11px; */
+
     width: 88%;
   }
 }
@@ -40,7 +40,7 @@
     width: 94%;
   }
   .nav-wrapper a {
-    /* font-size: 11px; */
+
   }
 }
 @media (min-width: 883.1px) and (max-width: 884px) {
@@ -48,6 +48,6 @@
     width: 100%;
   }
   .nav-wrapper a {
-    /* font-size: 12px; */
+
   }
 }

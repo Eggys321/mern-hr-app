@@ -56,7 +56,7 @@ function App() {
             }
           >
             <Route index element={<AdminSummary />} />
-            {/* employees */}
+
             <Route path="employees" element={<Employees />}>
               <Route index element={<Navigate to="allemployees" />} />
               <Route path="allemployees" element={<AllEmployees />} />
@@ -64,7 +64,7 @@ function App() {
               <Route path="new-team" element={<NewTeam />} />
               <Route path="edit-team" element={<EditTeam />} />
             </Route>
-            {/* ======= */}
+
             <Route
               path="/admin-dashboard/employees/personal-info"
               element={<PersonalInfo />}
@@ -79,7 +79,7 @@ function App() {
             <Route path="payroll" element={<PayRoll />} />
             <Route path="settings" element={<Settings />} />
           </Route>
-          {/* below for employee */}
+
 
           <Route
             path="/employee-dashboard"

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { NavLink, Outlet, useMatch,useNavigate } from "react-router-dom";
 import Nav from "../../layout/Nav";
+import { Loader } from "../../utils/Loader";
 import "../../styles/PersonalInfo.css";
 import Form from "react-bootstrap/Form";
 import exclamationImg from "../../assets/exclamation-sign.svg";
@@ -26,13 +27,11 @@ const PersonalInfo = () => {
     resolver: yupResolver(personalInformation),
   });
   const onSubmit = (data) => {
-    // Check if a file was selected
     if (data.profileImage && data.profileImage.length > 0) {
       const file = data.profileImage[0]; 
       const reader = new FileReader();
   
       reader.onloadend = () => {
-        // Convert the file to base64
         const base64Image = reader.result; 
   
         const formDataWithImage = {
@@ -112,7 +111,7 @@ const PersonalInfo = () => {
                   </span>
                 </Form.Group>
               </div>
-              {/* mobile and email */}
+
               <div className="row justify-content-between mb-4">
                 <Form.Group
                   className="mb-3 col-lg-6 ps-0 "
@@ -145,7 +144,7 @@ const PersonalInfo = () => {
                   </span>
                 </Form.Group>
               </div>
-              {/* date of birth and marital status */}
+
               <div className="row justify-content-between mb-4">
                 <Form.Group
                   className="mb-3 col-lg-6 ps-0 "
@@ -181,7 +180,7 @@ const PersonalInfo = () => {
                   </span>
                 </Form.Group>
               </div>
-              {/* gender and address */}
+
               <div className="row justify-content-between mb-4">
                 <Form.Group className="mb-3 col-lg-6 ps-0">
                   <Form.Label htmlFor="">Gender <span className="text-danger">*</span> </Form.Label>
@@ -275,7 +274,9 @@ const PersonalInfo = () => {
         </main>
       ) : (
         <div>
-          <Outlet />
+          <Suspense fallback={<div className="py-5 d-flex justify-content-center"><Loader /></div>}>
+            <Outlet />
+          </Suspense>
         </div>
       )}
     </>

@@ -4,13 +4,11 @@
   width: 208px;
   height: 36px;
   border-radius: 7px;
-  /* padding: 5px; */
+
 }
 
 .admin-dashoard {
-  /* max-width: 1536px !important;
-  margin: 0 auto !important;
-  overflow-x: hidden; */
+
 }
 
 .admin-dashoard-main {
@@ -58,11 +56,11 @@
   font-family: var(--ff-DM-sans);
   font-weight: 500;
   font-size: 16px;
-  
+
 }
 
 @media (max-width: 765px) {
-  
+
 .admin-dashoard-main {
   display: block;
 }

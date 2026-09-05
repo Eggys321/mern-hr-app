@@ -6,9 +6,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { forgotPasswordSchema } from "../utils/ValidationSchema";
 import { useForm } from "react-hook-form";
 import "../styles/ForgotPassword.css";
-import axios from "axios";
 import { Loader } from "../utils/Loader";
 import toast from "react-hot-toast";
+import apiClient from "../utils/apiClient";
 const ForgotPassword = () => {
   const [isClicked,setIsClicked] = useState(false)
 
@@ -26,25 +26,14 @@ const ForgotPassword = () => {
     setIsClicked(true)
 
    try {
-    const req = await fetch("https://mern-hr-app.onrender.com/api/auth/forgotpassword",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify(data)
-    })
-    const res = await req.json();
-    
-    if(!res.success){
-      toast.error(res.errMsg)
+    const res = await apiClient.post("/api/auth/forgotpassword", data);
+    if (res.data.success) {
+      toast.success(res.data.message)
+    } else {
+      toast.error(res.data.errMsg)
     }
-    if(res.success){
-      toast.success(res.message)
-
-    }
-    
    } catch (error) {
-    
+    toast.error(error.response?.data?.errMsg || "Failed to send reset email");
    }finally{
     setIsClicked(false)
 

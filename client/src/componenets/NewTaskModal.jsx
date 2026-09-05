@@ -3,12 +3,9 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import "../styles/NewTeamModal.css";
-import axios from "axios";
 import toast, { LoaderIcon } from "react-hot-toast";
 import { CiCircleRemove } from "react-icons/ci";
-// import { Loader } from "../utils/Loader";
-
-
+import apiClient from "../utils/apiClient";
 const NewTaskModal = (props) => {
   const [title, setTitle] = useState([]);
   const [description, setDescription] = useState([]);
@@ -18,25 +15,17 @@ const NewTaskModal = (props) => {
   const [status, setStatus] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const token = localStorage.getItem("hr-token");
   const [isSubmitting,setIsSubmitting] = useState(false)
 
   useEffect(() => {
     if (searchQuery) {
       const fetchSuggestions = async () => {
         try {
-          const response = await axios.get(
-            `https://mern-hr-app.onrender.com/api/employee/users/search?query=${searchQuery}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          const response = await apiClient.get(
+            `/api/employee/users/search?query=${searchQuery}`
           );
           setSuggestions(response.data.users);
-        } catch (error) {
-          // console.error("Error fetching user suggestions:", error);
-        }
+        } catch (error) {}
       };
       fetchSuggestions();
     } else {
@@ -71,15 +60,7 @@ const NewTaskModal = (props) => {
     e.preventDefault();
     try {
       setIsSubmitting(true)
-      const req = await axios.post(
-        "https://mern-hr-app.onrender.com/api/task/tasks",
-        newTask,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const req = await apiClient.post("/api/task/tasks", newTask);
       if (req.data.success) {
         toast.success(req?.data?.message);
         setTitle([]);
@@ -91,9 +72,7 @@ const NewTaskModal = (props) => {
         setSearchQuery("");
         setSuggestions([]);
       }
-      // console.log(req.data);
     } catch (error) {
-      // console.error("Error creating task:", error.response.data.errMsg);
       toast.error(error?.response?.data?.errMsg);
     }finally{
       setIsSubmitting(false)
@@ -149,7 +128,7 @@ const NewTaskModal = (props) => {
                 onChange={(e) => setDescription(e.target.value)}
               />
             </Form.Group>
-            {/* assign persons */}
+
             <Form.Group className="mb-3">
               <Form.Label>Assign Persons</Form.Label>
               <Form.Control
@@ -158,7 +137,7 @@ const NewTaskModal = (props) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              {/* Suggestions List */}
+
               {suggestions.length > 0 && (
                 <ul className="suggestions-list" role="button">
                   {suggestions.map((suggestion) => (
@@ -171,7 +150,7 @@ const NewTaskModal = (props) => {
                   ))}
                 </ul>
               )}
-              {/* Display Added Members */}
+
               <div className="assigned-members">
                 {assignedMembers.map((member) => (
                   <span key={member._id} className="assigned-member">
@@ -186,8 +165,8 @@ const NewTaskModal = (props) => {
                 ))}
               </div>
             </Form.Group>
-            {/* start and end date */}
-            {/* Start and End Date */}
+
+
             <Form.Group className="mb-3" controlId="startDate">
               <Form.Label>Start Date</Form.Label>
               <Form.Control
@@ -206,7 +185,7 @@ const NewTaskModal = (props) => {
               />
             </Form.Group>
 
-            {/* Task Status */}
+
             <Form.Group className="mb-3" controlId="taskStatus">
               <Form.Label>Task Status</Form.Label>
               <Form.Select
@@ -241,7 +220,7 @@ const NewTaskModal = (props) => {
           </Form>
         </Modal.Body>
 
-        {/* <Button onClick={props.onHide}>Close</Button> */}
+
       </Modal>
     </>
   );

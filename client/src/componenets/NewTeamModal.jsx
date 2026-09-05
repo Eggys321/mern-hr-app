@@ -1,11 +1,55 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
+import toast from "react-hot-toast";
 import "../styles/NewTeamModal.css";
-// import DeptButton from "../componenets/MyButton"
+import apiClient from "../utils/apiClient";
 
 const NewTeamModal = (props) => {
+  const [name, setName] = useState("");
+  const [manager, setManager] = useState("");
+  const [employees, setEmployees] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!props.show) return;
+    const fetchEmployees = async () => {
+      try {
+        const res = await apiClient.get("/api/employee/users?limit=100");
+        setEmployees(res.data.users || []);
+      } catch (error) {}
+    };
+    fetchEmployees();
+  }, [props.show]);
+
+  function reset() {
+    setName("");
+    setManager("");
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!name || !manager) {
+      toast.error("Department name and manager are required");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const res = await apiClient.post("/api/department/create", { name, manager });
+      if (res.data.success) {
+        toast.success(res.data.message || "Department created");
+        reset();
+        window.dispatchEvent(new Event("department-created"));
+        props.onHide?.();
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.response?.data?.errMsg || "Failed to create department");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
       <Modal
@@ -21,76 +65,58 @@ const NewTeamModal = (props) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Department Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter Name" autoFocus />
+              <Form.Control
+                type="text"
+                placeholder="Enter Name"
+                autoFocus
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </Form.Group>
-            {/* <Form.Group
-              className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Label>Task Description</Form.Label>
-              <Form.Control as="textarea" rows={3} />
-            </Form.Group> */}
-            {/* assign persons */}
             <Form.Group className="mb-3">
               <Form.Label htmlFor="">Dept Manager</Form.Label>
-              <Form.Select id="" className="new-team-wrapper-select">
-                <option disabled selected>
+              <Form.Select
+                id=""
+                className="new-team-wrapper-select"
+                value={manager}
+                onChange={(e) => setManager(e.target.value)}
+              >
+                <option disabled value="">
                   Select
                 </option>
-                <option>Product</option>
-                <option>Admin</option>
-              </Form.Select>
-            </Form.Group>
-            {/* start and end date */}
-            {/* <div className="container-fluid mb-4">
-            <div className='row justify-content-between'>
-
-                <Form.Group
-                  className="mb-3 col-lg-6 ps-0"
-                  controlId="exampleForm.ControlInput1"
-                >
-                  <Form.Label>Start Date</Form.Label>
-                  <Form.Control type="date" placeholder="Select Date" />
-                </Form.Group>
-                <Form.Group
-                  className="mb-3 col-lg-6 px-0 "
-                  controlId="exampleForm.ControlInput1"
-                >
-                  <Form.Label>End Date</Form.Label>
-                  <Form.Control type="date" placeholder="Select Date" />
-                </Form.Group>
-            </div>
-              </div> */}
-            {/* task status */}
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="">Dept Members</Form.Label>
-              <Form.Select id="" className="new-team-wrapper-select">
-                <option disabled selected>
-                  Select
-                </option>
-                <option>Product</option>
-                <option>Admin</option>
+                {employees.map((employee) => (
+                  <option key={employee._id} value={employee._id}>
+                    {employee.firstName} {employee.lastName}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
             <div className="d-flex flex-column-reverse flex-md-row gap-3 w-100">
-              <Button variant="outline-danger" className="cancel-btn mb-2">
+              <Button
+                type="button"
+                variant="outline-danger"
+                className="cancel-btn mb-2"
+                onClick={() => {
+                  reset();
+                  props.onHide?.();
+                }}
+              >
                 Cancel
               </Button>
               <Button
                 variant="primary"
                 type="submit"
                 className="save-and-continue-btn"
+                disabled={isSubmitting}
               >
-                Save
+                {isSubmitting ? "Saving..." : "Save"}
               </Button>
             </div>
           </Form>
         </Modal.Body>
-
-        {/* <Button onClick={props.onHide}>Close</Button> */}
       </Modal>
     </>
   );

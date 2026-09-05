@@ -15,12 +15,7 @@
   outline: none;
 }
 
-/* .nav-div h4{
-    font-family: var(--ff-DM-sans);
-    font-weight: 500;
-    font-size: 16px;
-    color: rgba(22, 30, 84, 1);
-} */
+
 
 .drop-down-header {
   font-family: var(--ff-DM-sans);
@@ -29,12 +24,7 @@
   color: rgba(22, 30, 84, 1);
 }
 
-/* .nav-div {
-  display: flex;
-  flex-grow: 1;
-  justify-content: space-between;
-  align-items: center;
-} */
+
 
 @media (max-width: 768px) {
   .nav-form input {

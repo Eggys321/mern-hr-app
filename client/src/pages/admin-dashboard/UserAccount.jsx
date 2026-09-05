@@ -6,8 +6,8 @@ import MyButton from "../../componenets/MyButton";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { userAccount } from "../../utils/ValidationSchema";
-import axios from "axios";
 import toast from "react-hot-toast";
+import apiClient from "../../utils/apiClient";
 
 const UserAccount = () => {
   const [profileImage, setProfileImage] = useState(null);
@@ -20,7 +20,6 @@ const navigate = useNavigate()
   } = useForm({
     resolver: yupResolver(userAccount),
   });
-  const token = localStorage.getItem("hr-token");
 
   const onSubmit = async (data) => {
     localStorage.setItem("userAccount", JSON.stringify(data));
@@ -56,15 +55,10 @@ const navigate = useNavigate()
     console.log("Final Payload:", finalPayload);
   
     try {
-      const response = await axios.post(
-        "https://mern-hr-app.onrender.com/api/auth/signup",
+      const response = await apiClient.post(
+        "/api/auth/signup",
         finalPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
       if(response.data.success){
         toast.success(response.data.message);
@@ -72,10 +66,6 @@ const navigate = useNavigate()
       }
      
       console.log("Signup successful:", response.data);
-      // localStorage.removeItem("personalInfo");
-      // localStorage.removeItem("professionalInfo");
-      // localStorage.removeItem("salaryInfo");
-      // localStorage.removeItem("userAccountData");
     } catch (error) {
       if (error.response && error.response.data) {
         toast.error(error.response.data.errMsg || "An error occurred");

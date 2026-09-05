@@ -2,7 +2,6 @@ import Task from "../models/taskModel.js";
 import USER from "../models/userModel.js";
 import { sendTaskMail } from "../emails/emailHandlers.js";
 
-// create a task
 export const createTask = async (req, res) => {
   const { title, description, assignedMembers, startDate, endDate, status } =
     req.body;
@@ -45,6 +44,8 @@ export const createTask = async (req, res) => {
         assignedMembers: members,
 
         clientUrl,
+      }).catch((emailError) => {
+        console.error(`Failed to email ${member.email} about new task:`, emailError);
       });
     });
 
@@ -85,7 +86,6 @@ export const createTask = async (req, res) => {
   }
 };
 
-// Get all tasks with specified details
 export const getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find()
@@ -113,7 +113,6 @@ export const getAllTasks = async (req, res) => {
   }
 };
 
-// Delete a task
 export const deleteTask = async (req, res) => {
   const { id } = req.params;
   try {
@@ -134,7 +133,6 @@ export const deleteTask = async (req, res) => {
   }
 };
 
-// Edit a task
 export const editTask = async (req, res) => {
   const { id } = req.params; 
   const { title, description, assignedMembers, startDate, endDate, status } =
@@ -159,7 +157,6 @@ export const editTask = async (req, res) => {
     res.status(500).json({ success: false, errMsg: "Server error." });
   }
 };
-// Get a task
 export const getTaskById = async (req, res) => {
   const { id } = req.params;
 
@@ -194,7 +191,6 @@ export const getTaskById = async (req, res) => {
     res.status(500).json({ success: false, errMsg: "Server error." });
   }
 };
-// employee's assigned task
 export const getAssignedTasks = async (req, res) => {
   const { userId } = req.user; 
 
@@ -214,7 +210,6 @@ export const getAssignedTasks = async (req, res) => {
   }
 };
 
-// employee's get a single task
 export const getSingleTask = async (req, res) => {
   const { taskId } = req.params; 
 

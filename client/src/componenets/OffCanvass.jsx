@@ -29,7 +29,7 @@ const OffCanvass = ({ name, ...props }) => {
         />
         <Offcanvas show={show} onHide={handleClose} {...props} className="w-75">
           <Offcanvas.Body>
-            {/* section-1 */}
+
             <section className="d-flex flex-column gap-5 admin-dashboard-section-">
               <div className="d-flex gap-5 align-items-center">
                 <div className="d-flex  gap-2 admin-dashboard-section-1-div-1">
@@ -56,7 +56,7 @@ const OffCanvass = ({ name, ...props }) => {
                   </div>
                 </div>
               </div>
-              {/* =========================== */}
+
               <div className="d-flex flex-column gap-4 admin-dashboard-section-1-div-2">
                 <h2>MAIN MENU</h2>
                 <div className="ms-3 sidebar">
@@ -92,8 +92,8 @@ const OffCanvass = ({ name, ...props }) => {
                           <NavLink key={id} to={path} end onClick={handleClose}>
                             {({ isActive, isPending }) => (
                               <span
-                                className={`d-flex align-items-center gap-2 mb-3  isPending ? "pending" : ${
-                                  isActive ? "active" : ""
+                                className={`d-flex align-items-center gap-2 mb-3 ${
+                                  isPending ? "pending" : isActive ? "active" : ""
                                 }`}
                               >
                                 <img src={Icon} alt={name} className="" />

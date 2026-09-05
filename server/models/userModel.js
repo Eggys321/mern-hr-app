@@ -117,36 +117,32 @@ const userSchema = new Schema({
   resetPasswordExpire:Date
 },{timestamps:true});
 
-// hashing password
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
-    next();
+    return next();
   }
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
-// password comparison
 userSchema.methods.comparePassword = async function(userPassword){
   const isCorrect = await bcrypt.compare(userPassword, this.password);
   return isCorrect;
-}
-// generate jwt token
+};
 userSchema.methods.generateToken = async function(params){
   let token = jwt.sign({userId:this._id,role:this.role,firstName: this.firstName,email:this.email,lastName:this.lastName,profileImage:this.profileImage},process.env.JWT_SECRETE,{
       expiresIn: '24h',
     });
 
   return token;
-}
+};
 
-// generating reset password token
 userSchema.methods.getResetPasswordToken = function(){
   const resetToken = crypto.randomBytes(20).toString("hex");
   this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
   this.resetPasswordExpire = Date.now() + 10 * (60 * 1000);
   return resetToken;
-}
+};
 
 const USER = mongoose.model("user", userSchema);
 

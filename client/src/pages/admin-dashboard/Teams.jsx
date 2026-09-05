@@ -1,45 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { departments } from "../../db";
 import "../../styles/Teams.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import arrowRightImg from "../../assets/arrow-right-dept.svg";
 import Modal from 'react-bootstrap/Modal';
-import axios from "axios";
 import { Loader } from "../../utils/Loader";
+import apiClient from "../../utils/apiClient";
 const Teams = () => {
   const [dept, setDept] = useState([]);
   const [selectedDept, setSelectedDept] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isLoading,setIsLoading] = useState(false)
-  const token = localStorage.getItem("hr-token");
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
   const getDepts = async () => {
     try {
       setIsLoading(true)
-      const req = await axios.get(
-        "https://mern-hr-app.onrender.com/api/department/all-departments",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const req = await apiClient.get("/api/department/all-departments");
       setDept(req.data.departments);
     } catch (error) {
+      setDept([]);
     }finally{
       setIsLoading(false)
     }
   };
 
-  // signle dept
+  const searchDepts = async (query) => {
+    try {
+      setIsLoading(true)
+      const req = await apiClient.get(`/api/department/dept/search?query=${encodeURIComponent(query)}`);
+      setDept(req.data.departments);
+    } catch (error) {
+      setDept([]);
+    } finally {
+      setIsLoading(false)
+    }
+  };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setSearchQuery(searchInput.trim()), 400);
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
+
   const getDeptById = async (id) => {
 
     try {
       setIsLoading(true)
-      const res = await axios.get(`https://mern-hr-app.onrender.com/api/department/departments/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await apiClient.get(`/api/department/departments/${id}`);
       setSelectedDept(res.data.department);
       setShowModal(true); 
       
@@ -51,18 +58,37 @@ const Teams = () => {
 
 
   useEffect(() => {
-    getDepts();
-  }, []);
-  if (isLoading)
-    return (
-      <div className="d-flex justify-content-center">
-        <Loader />
-      </div>
-    );
+    if (searchQuery) {
+      searchDepts(searchQuery);
+    } else {
+      getDepts();
+    }
+    window.addEventListener("department-created", getDepts);
+    return () => window.removeEventListener("department-created", getDepts);
+  }, [searchQuery]);
   return (
     <>
       <main className="teams-wrapper">
         <div className="container-fluid teams-wrapper-div">
+          <div className="d-flex justify-content-end mb-3">
+            <input
+              type="search"
+              className="form-control"
+              style={{ maxWidth: 280 }}
+              placeholder="Search departments..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
+          {isLoading ? (
+            <div className="d-flex justify-content-center">
+              <Loader />
+            </div>
+          ) : dept.length === 0 ? (
+            <p className="text-muted py-4">
+              {searchQuery ? `No departments match "${searchQuery}".` : "No departments yet."}
+            </p>
+          ) : (
           <div className=" x row justify-content-between gap-5">
             {dept?.map((dept) => {
               return (
@@ -131,24 +157,34 @@ const Teams = () => {
               );
             })}
           </div>
+          )}
         </div>
-        {/* modal fro single dept */}
+
         <Modal show={showModal} onHide={() => setShowModal(false)} centered  size="lg">
           <Modal.Header closeButton >
           
-            <Modal.Title> 
+            <Modal.Title>
               <div  className="d-flex justify-content-between gap-5">
 
-              <h6> {selectedDept?.name} Department </h6> <button>Edit</button>
+              <h6> {selectedDept?.name} Department </h6>
+              <button
+                onClick={() =>
+                  navigate("/admin-dashboard/employees/edit-team", {
+                    state: { departmentId: selectedDept?._id },
+                  })
+                }
+              >
+                Edit
+              </button>
               </div>
               </Modal.Title>
             
           </Modal.Header>
           <Modal.Body>
             
-           { selectedDept?.members?.map((depts)=>{
+           { selectedDept?.members?.map((depts, index)=>{
             return(
-              <div className="d-flex justify-content-between">
+              <div className="d-flex justify-content-between" key={depts?._id || index}>
                 <div className="teams-wrapper-employees-profile-pic">
 
                 <img src={depts?.profileImage} alt="" />
@@ -164,59 +200,7 @@ const Teams = () => {
             )
            })}
           </Modal.Body>
-          {/* <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModal(false)}>
-              Close
-            </Button>
-          </Modal.Footer> */}
         </Modal>
-        {/* {selectedDept && (
-          <div className={`modal fade ${showModal ? "show" : ""}`} style={{ display: showModal ? "block" : "none" }}>
-            <div className="modal-dialog modal-lg">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">{selectedDept.name} Department</h5>
-                  <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
-                </div>
-                <div className="modal-body">
-                  <div className="manager-info d-flex align-items-center gap-2">
-                    <img
-                      src={selectedDept.manager?.profileImage}
-                      alt={`${selectedDept.manager?.fullName}'s profile`}
-                      className="teams-wrapper-employees-profile-pic"
-                    />
-                    <div>
-                      <p className="m-0"><strong>Manager:</strong> {selectedDept.manager?.fullName}</p>
-                    </div>
-                  </div>
-                  <h6 className="mt-4">Members</h6>
-                  {selectedDept.members.length > 0 ? (
-                    selectedDept.members.map((member) => (
-                      <div key={member._id} className="d-flex align-items-center my-2">
-                        <img
-                          src={member.profileImage}
-                          alt={`${member.fullName}'s profile`}
-                          className="teams-wrapper-employees-profile-pic"
-                        />
-                        <div className="ms-3">
-                          <p className="m-0"><strong>{member.fullName}</strong></p>
-                          <p className="m-0">{member.jobTitle}</p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p>No members in this department.</p>
-                  )}
-                </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )} */}
       </main>
     </>
   );

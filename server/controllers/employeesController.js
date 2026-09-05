@@ -1,30 +1,92 @@
 import USER from "../models/userModel.js";
-// update employee
-export const updateEmployee = async(req,res)=>{
-    const {employeeId} = req.params;
-    try {
-        const employee = await USER.findOneAndUpdate(
-            {_id:employeeId},
-            req.body,
-            {new:true,runValidators:true}
-        )
-        res.status(200).json({success:true,message:"employee updated",employee})
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json(error.message)
+import { v2 as cloudinary } from "cloudinary";
+import { escapeRegex } from "../utils/escapeRegex.js";
+
+const SELF_EDITABLE_FIELDS = [
+  "firstName",
+  "lastName",
+  "mobileNumber",
+  "address",
+  "maritalStatus",
+];
+const ADMIN_EDITABLE_FIELDS = [
+  ...SELF_EDITABLE_FIELDS,
+  "email",
+  "role",
+  "salary",
+  "jobTitle",
+  "department",
+  "employmentStatus",
+  "officeOfEmployment",
+  "gender",
+  "dateOfBirth",
+  "startDate",
+];
+
+function pickAllowedFields(source, allowedKeys) {
+  const result = {};
+  for (const key of allowedKeys) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      result[key] = source[key];
     }
+  }
+  return result;
 }
-// all employees
+
+export const updateEmployee = async (req, res) => {
+  const { employeeId } = req.params;
+  const isSelf = req.user.userId === employeeId;
+  const isAdmin = ["admin", "super-admin"].includes(req.user.role);
+
+  if (!isSelf && !isAdmin) {
+    return res.status(403).json({
+      success: false,
+      errMsg: "You do not have permission to update this employee.",
+    });
+  }
+
+  const allowedFields = isAdmin ? ADMIN_EDITABLE_FIELDS : SELF_EDITABLE_FIELDS;
+  const updates = pickAllowedFields(req.body, allowedFields);
+  if (
+    Object.prototype.hasOwnProperty.call(updates, "role") &&
+    updates.role === "super-admin" &&
+    req.user.role !== "super-admin"
+  ) {
+    delete updates.role;
+  }
+
+  try {
+    const imageToUpload = req.files?.profileImage?.tempFilePath;
+    if (imageToUpload) {
+      const result = await cloudinary.uploader.upload(imageToUpload, {
+        use_filename: true,
+        folder: "hr_manager",
+      });
+      updates.profileImage = result.secure_url;
+    }
+
+    const employee = await USER.findOneAndUpdate({ _id: employeeId }, updates, {
+      new: true,
+      runValidators: true,
+    }).select("-password -resetPasswordToken -resetPasswordExpire");
+
+    if (!employee) {
+      return res.status(404).json({ success: false, errMsg: "Employee not found." });
+    }
+
+    res.status(200).json({ success: true, message: "employee updated", employee });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ success: false, errMsg: error.message });
+  }
+};
 export const employees = async(req,res)=>{
     try {
-        // Set default values for page and limit
         const page = parseInt(req.query.page) || 1; 
         const limit = parseInt(req.query.limit) || 10;
     
-        // Calculate the starting index of the page
         const startIndex = (page - 1) * limit;
     
-        // Fetch users with pagination and populate the department field
         const users = await USER.find()
         .populate({
           path: 'department',
@@ -38,15 +100,12 @@ export const employees = async(req,res)=>{
           .select('-password -resetPasswordExpire -resetPasswordToken -createdAt -updatedAt')
           .skip(startIndex);
     
-        // Get total number of users for pagination
         const totalUsers = await USER.countDocuments();
     
-        // If no users are found
         if (!users || users.length === 0) {
           return res.status(404).json({ success: false, errMsg: "No users found." });
         }
     
-        // Return the paginated list of users with total count
         res.status(200).json({
           success: true,
           count: users.length,
@@ -55,71 +114,60 @@ export const employees = async(req,res)=>{
           totalPages: Math.ceil(totalUsers / limit),
           users,
         });
-    
+
       } catch (error) {
         console.error(error.message);
         res.status(500).json({ success: false, errMsg: "Server error." });
       }
-    // try {
-    //     const users = await USER.find().populate('department');
-    //     const userLenght = users.length;
-    //     res.status(200).json({
-    //         userLenght,
-    //         success: true,
-    //         data: users,
-    //       });
-    // } catch (error) {
-    //     console.error(error);
-    //     res.status(500).json({ success: false, errMsg: "Server error" });
-    // }
-}
+};
 
-// search employees
 export const searchUsers = async (req, res) => {
-    const { query } = req.query; // Get the search query from query parameters
-  
+    const { query } = req.query;
+    const safeQuery = escapeRegex(query);
+
     try {
-      // Use a regular expression to perform a case-insensitive search on name or email
       const users = await USER.find({
         $or: [
-          { firstName: { $regex: query, $options: 'i' } }, // Search by first name
-          { lastName: { $regex: query, $options: 'i' } }, // Search by last name
-          { email: { $regex: query, $options: 'i' } },    // Search by email
+          {
+            firstName: { $regex: safeQuery, $options: 'i' }
+          },
+          {
+            lastName: { $regex: safeQuery, $options: 'i' }
+          },
+          {
+            email: { $regex: safeQuery, $options: 'i' }
+          },
         ]
-      });
-  
-      // If no users are found
+      }).select('-password -resetPasswordToken -resetPasswordExpire');
+
       if (!users || users.length === 0) {
         return res.status(404).json({ success: false, errMsg: "No users found." });
       }
-  
-      // Return the list of found users
+
       res.status(200).json({
         success: true,
         count: users.length,
         users,
       });
-  
+
     } catch (error) {
       console.error(error.message);
       res.status(500).json({ success: false, errMsg: "Server error." });
     }
   };
 
-//   single employee
 export const getEmployeeById = async (req, res) => {
     const { id } = req.params;
-  
+
     try {
-      // Fetch the employee using the ID
-      const employee = await USER.findById(id).populate('department');
-  
-      // If no employee is found
+      const employee = await USER.findById(id)
+        .populate('department')
+        .select('-password -resetPasswordToken -resetPasswordExpire');
+
       if (!employee) {
         return res.status(404).json({ success: false, errMsg: "Employee not found." });
       }
-  
-      // Return the employee data
+
       res.status(200).json({
         success: true,
         employee,
@@ -129,14 +177,11 @@ export const getEmployeeById = async (req, res) => {
       res.status(500).json({ success: false, errMsg: "Server error." });
     }
   };
-
-
-  // Get Employee Profile for employees
 export const getEmployeeProfile = async (req, res) => {
-  const { userId } = req.user; 
+  const { userId } = req.user;
 
   try {
-      const employee = await USER.findById({ _id: userId}).select('firstName lastName email profileImage password');
+      const employee = await USER.findById(userId).select('firstName lastName email profileImage');
 
       if (!employee) {
           return res.status(404).json({ success: false, errMsg: "Employee not found." });
@@ -145,10 +190,10 @@ export const getEmployeeProfile = async (req, res) => {
       res.status(200).json({
           success: true,
           employee: {
+              _id: employee._id,
               fullName: `${employee.firstName} ${employee.lastName}`,
               email: employee.email,
               profileImage: employee.profileImage,
-              password:employee.password
           }
       });
   } catch (error) {
@@ -156,10 +201,3 @@ export const getEmployeeProfile = async (req, res) => {
       res.status(500).json({ success: false, errMsg: "Server error." });
   }
 };
-
-
-
-
-
-
- 

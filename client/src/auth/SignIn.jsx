@@ -9,16 +9,15 @@ import { signInSchema } from "../utils/ValidationSchema";
 import { Link, useNavigate } from "react-router-dom";
 import vissibilityOnIcon from "../assets/visibility_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg";
 import vissibilityOffIcon from "../assets/visibility_off_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg";
-import toast from 'react-hot-toast';
+  import toast from 'react-hot-toast';
 import { useAuth } from "../context/AuthContext";
 import { Loader } from "../utils/Loader";
+import apiClient from "../utils/apiClient";
 
-const apiUrl = import.meta.env.VITE_API_URL
 const SignIn = () => {
   const [isReveal, setIsReveal] = useState(false);
   const [isClicked,setIsClicked] = useState(false)
-  const [isError,setIsError] = useState(null)
-  const {login} = useAuth() 
+  const {login} = useAuth()
   const navigate = useNavigate();
   const {
     register,
@@ -30,44 +29,29 @@ const SignIn = () => {
       email: "demoaccount2@gmail.cooom",
       password: "12345678",
     },
-    signInSchema
   });
   async function handleSignIn(data) {
     setIsClicked(true)
     try {
-      const req = await fetch(`${apiUrl}/api/auth/signin`,{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify(data)
-      })
-      const res = await req.json();
-    
-      if(!res.success){
-        toast.error(res.errMsg)
-      }
-      if(res.success){
-        toast.success(res.message)
-        login(res.user)
-        localStorage.setItem("hr-token",res.user.token)
-        if(res.user.role === "super-admin" || res.user.role === "admin"){
+      const res = await apiClient.post("/api/auth/signin", data);
+
+      if (res.data.success) {
+        toast.success(res.data.message)
+        login(res.data.user)
+        localStorage.setItem("hr-token", res.data.user.token)
+        if(res.data.user.role === "super-admin" || res.data.user.role === "admin"){
           navigate("/admin-dashboard")
         }else{
           navigate("/employee-dashboard")
         }
+      } else {
+        toast.error(res.data.errMsg)
       }
-      
     } catch (error) {
-    if (error.message === "Failed to fetch") {
-      setIsError("Unable to connect to the server. Please check your network.");
-    } else if (error.message.startsWith("HTTP Error")) {
-      setIsError(error.message);  
-    } else {
-      setIsError("An unexpected error occurred. Please try again.");
-    }
-    toast.error(isError);
-      
+      const message = error.response
+        ? error.response.data?.errMsg || "Email or Password is Incorrect"
+        : "Unable to connect to the server. Please check your network.";
+      toast.error(message);
     }finally{
       setIsClicked(false)
     }
@@ -99,6 +83,9 @@ const SignIn = () => {
             <h3 className="pt-4">
               Welcome to HR Manager - Where Creativity Meets Opportunity!
             </h3>
+            <p className="text-muted small mb-0">
+              Demo account pre-filled below - just click Sign In to explore the app.
+            </p>
           </div>
           <Form.Group className="" controlId="formBasicEmail">
             <Form.Label className="label">Email <span className="text-danger fs-5">*</span></Form.Label>

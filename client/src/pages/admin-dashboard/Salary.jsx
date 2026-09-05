@@ -2,6 +2,7 @@ import React from "react";
 import Nav from "../../layout/Nav";
 import { NavLink,useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 import MyButton from "../../componenets/MyButton";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -39,7 +40,10 @@ const Salary = () => {
                   controlId="exampleForm.ControlInput1"
                 >
                   <Form.Label>Amount <span className="text-danger">*</span> </Form.Label>
-                  <Form.Control type="number" placeholder="Enter" {...register("salary", { required: true })}/>
+                  <InputGroup>
+                    <InputGroup.Text>₦</InputGroup.Text>
+                    <Form.Control type="number" placeholder="Enter amount" {...register("salary", { required: true })}/>
+                  </InputGroup>
                   <span className="text-danger fs-6 text-start fw-bold">
                     {" "}
                     {errors.salary?.message}

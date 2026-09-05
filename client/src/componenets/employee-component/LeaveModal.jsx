@@ -1,32 +1,50 @@
-import React,{useContext, useState} from "react";
+import React,{useState} from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import AuthContext, { useAuth } from "../../context/AuthContext";
-// import { useState } from "react";
-
+import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 const LeaveModal = (props) => {
-  // const {createLeave} = useAuth()
-  const {createLeave} = useContext(AuthContext)
+  const {createLeave} = useAuth()
   const [leaveType, setLeaveType] = useState("select");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function reset() {
+    setLeaveType("select");
+    setStartDate("");
+    setEndDate("");
+    setDescription("");
+  }
 
   const handleLeaveSubmit = async () => {
+    if (leaveType === "select" || !startDate || !endDate || !description) {
+      toast.error("All fields are required");
+      return;
+    }
+    if (new Date(endDate) < new Date(startDate)) {
+      toast.error("End date can't be before the start date");
+      return;
+    }
     const leaveData = {
       leaveType,
       startDate,
       endDate,
       description,
     };
-    await createLeave(leaveData);
-    setLeaveType("select"); 
-    setStartDate("");
-    setEndDate("");
-    setDescription("");
-    props.onHide(); 
+    setIsSubmitting(true);
+    try {
+      const succeeded = await createLeave(leaveData);
+      if (succeeded) {
+        reset();
+        props.onHide();
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
     return (
       <>
@@ -44,7 +62,7 @@ const LeaveModal = (props) => {
           </Modal.Header>
           <Modal.Body>
             <Form>
-              {/* task status */}
+
               <Form.Group className="mb-3">
                 <Form.Label htmlFor="">Leave Type</Form.Label>
                 <Form.Select id="" className="new-team-wrapper-select"   value={leaveType}
@@ -57,9 +75,8 @@ const LeaveModal = (props) => {
               <option value="casual">Casual Leave</option>
                 </Form.Select>
               </Form.Group>
-             
-             
-              {/* start and end date */}
+
+
               <div className="container-fluid mb-4">
               <div className='row justify-content-between'>
   
@@ -81,32 +98,41 @@ const LeaveModal = (props) => {
                   </Form.Group>
               </div>
                 </div>
-                <Form.Group
-              className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" rows={3} value={description}
-              onChange={(e) => setDescription(e.target.value)} />
-            </Form.Group>
-             
+              <Form.Group
+            className="mb-3"
+            controlId="exampleForm.ControlTextarea1"
+          >
+            <Form.Label>Description</Form.Label>
+            <Form.Control as="textarea" rows={3} value={description}
+            onChange={(e) => setDescription(e.target.value)} />
+          </Form.Group>
+
               <div className="d-flex flex-column-reverse flex-md-row justify-content-between w-100">
-                <Button variant="outline-danger" className="cancel-btn mb-2">
+                <Button
+                  type="button"
+                  variant="outline-danger"
+                  className="cancel-btn mb-2"
+                  onClick={() => {
+                    reset();
+                    props.onHide();
+                  }}
+                >
                   Cancel
                 </Button>
                 <Button
+                  type="button"
                   variant="primary"
-                  // type="submit"
                   onClick={handleLeaveSubmit}
                   className="save-and-continue-btn"
+                  disabled={isSubmitting}
                 >
-                  Save
+                  {isSubmitting ? "Saving..." : "Save"}
                 </Button>
               </div>
             </Form>
           </Modal.Body>
-  
-          {/* <Button onClick={props.onHide}>Close</Button> */}
+
+
         </Modal>
       </>
     );

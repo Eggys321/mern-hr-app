@@ -1,24 +1,14 @@
-import React, { useState, useEffect } from "react";
-import ladyProfilePic from "../assets/ladyProfilePic.svg";
+import React from "react";
 import messageImg from "../assets/messageImg.png";
 import searchImg from "../assets/searchIcon.svg";
 import notificationImg from "../assets/notificationImg.svg";
-import arrowDown from "../assets/arrowDownAuth.svg";
 import "../styles/Navbar.css";
-import AuthDropDown from "../componenets/AuthDropDown";
 import OffCanvass from "../componenets/OffCanvass";
 import Dropdown from "react-bootstrap/Dropdown";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 const Navbar = () => {
-  const [isTrue, setIsTrue] = useState(false);
-  const { user, isLoading, logout } = useAuth();
-// console.log(user);
-
-  function handleReveal() {
-    isTrue ? setIsTrue(false) : setIsTrue(true);
-  }
+  const { user, logout } = useAuth();
   return (
     <>
       <nav className="d-flex justify-content-between gap-5 sticky-top bg-light main-nav">
@@ -29,7 +19,6 @@ const Navbar = () => {
         </div>
         <form className="nav-form position-relative d-none d-md-block">
           <input
-            // type="search"
             name=""
             id=""
             placeholder="Search"
@@ -62,14 +51,14 @@ const Navbar = () => {
                 style={{width:"20px",height:"25px" , borderRadius:"100%"}}
               />
             </div>
-            {/* <h4 className="d-none d-lg-block">Eggys Eggys</h4> */}
+
             <Dropdown className="d-none d-lg-block">
               <Dropdown.Toggle
                 variant=""
                 id="dropdown-basic"
                 className="drop-down-header"
               >
-                {/* Eggys Eggys */}
+
                 {user && user?.firstName + ' ' + user.lastName }
               </Dropdown.Toggle>
 
@@ -83,19 +72,11 @@ const Navbar = () => {
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-            {/* <img
-              onClick={handleReveal}
-              role="button"
-              src={arrowDown}
-              alt="arrowDown-image"
-              className="mb-1 d-none d-lg-block"
-            /> */}
+
           </div>
         </div>
       </nav>
-      {/* <div className="position-absolute end-0 me-5 pe-1">
-        {isTrue && <AuthDropDown />}
-      </div> */}
+
     </>
   );
 };

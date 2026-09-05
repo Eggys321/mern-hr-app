@@ -17,7 +17,7 @@
   gap: 41px;
   width: 640px;
   height: 600.92px;
-  /* height: 525.92px; */
+
   background-color: #fff;
   padding: 32px 48px 32px 48px;
   border-radius: 8px;
@@ -75,7 +75,7 @@
     .main-auth {
       background-image: none;
     }
-  
+
     .sign-in-inner  {
       border: 2px solid var(--auth-bgrc);
       width: 96%;
@@ -96,4 +96,4 @@
         font-size: 16px;
     }
   }
-  
+

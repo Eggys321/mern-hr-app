@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
-import { allEmployeesList } from "../db";
 import "../styles/EmployeeTable.css";
 import chevronRight from "../assets/chevron right.svg";
 import chevronLeft from "../assets/chevron-left.svg";
-import axios from "axios";
 import { Loader } from "../utils/Loader";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import MyButton from "./MyButton";
 import EditProfileModal from "./EditProfileModal";
+import apiClient from "../utils/apiClient";
 
-const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
+const EmployeeTable = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,17 +19,14 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const token = localStorage.getItem("hr-token");
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
   const fetchEmployees = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `https://mern-hr-app.onrender.com/api/employee/users?page=${page}&limit=10`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await apiClient.get(
+        `/api/employee/users?page=${page}&limit=10`
       );
       setEmployees(response.data.users);
       setTotalPages(response.data.totalPages);
@@ -41,7 +37,31 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
     }
   };
 
-  // Pagination handlers
+  const searchEmployees = async (query) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiClient.get(
+        `/api/employee/users/search?query=${encodeURIComponent(query)}`
+      );
+      setEmployees(response.data.users);
+      setTotalPages(1);
+    } catch (err) {
+      if (err.response?.status === 404) {
+        setEmployees([]);
+      } else {
+        setError(err.response?.data?.errMsg || "Error searching employees");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setSearchQuery(searchInput.trim()), 400);
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
+
   const handleNext = () => {
     if (page < totalPages) {
       setPage((prev) => prev + 1);
@@ -56,12 +76,9 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
   const getEmployeeById = async (id) => {
     try {
       setLoading(true);
-      const req = await axios.get(`https://mern-hr-app.onrender.com/api/employee/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const req = await apiClient.get(`/api/employee/${id}`);
 
       setSelectedEmployee(req.data.employee);
-      // console.log(req.data.employee);
       setShowModal(true);
     } catch (error) {
       setError("Error fetching task details");
@@ -70,22 +87,41 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
     }
   };
   useEffect(() => {
-    fetchEmployees();
-  }, [page]);
-  if (loading)
-    return (
-      <div className="d-flex justify-content-center">
-        <Loader />
-      </div>
-    );
-  if (error) return <p>{error}</p>;
+    if (searchQuery) {
+      searchEmployees(searchQuery);
+    } else {
+      fetchEmployees();
+    }
+  }, [page, searchQuery]);
   const handleRowClick = (employeeId) => {
     getEmployeeById(employeeId);
   };
   return (
     <>
       <main className="employee-table-wrapper employee-table-container">
+        <div className="d-flex justify-content-end mb-3">
+          <input
+            type="search"
+            className="form-control"
+            style={{ maxWidth: 280 }}
+            placeholder="Search by name or email..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
+        </div>
+        {loading ? (
+          <div className="d-flex justify-content-center">
+            <Loader />
+          </div>
+        ) : error ? (
+          <p>{error}</p>
+        ) : (
         <div className="employee-table">
+          {employees.length === 0 ? (
+            <p className="text-muted py-4">
+              {searchQuery ? `No employees match "${searchQuery}".` : "No employees yet."}
+            </p>
+          ) : (
           <Table responsive="sm" hover role="button">
             <thead className="employee-table-wrapper-head">
               <tr>
@@ -176,7 +212,8 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
               );
             })}
           </Table>
-          {/* Modal for Employee Details */}
+          )}
+
           <Modal
             show={showModal}
             onHide={() => setShowModal(false)}
@@ -269,6 +306,8 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
           </Modal>
           <EditProfileModal selectedEmployee={selectedEmployee} show={showEditModal} onHide={() => setShowEditModal(false)}/>
         </div>
+        )}
+        {!searchQuery && !loading && !error && (
         <div className="employee-table-pagination-wrapper row justify-content-between align-items-center">
           <div className="col-lg-6 mt-3 d-flex justify-content-between ">
             <p>10 Entries per page</p>
@@ -302,6 +341,7 @@ const EmployeeTable = ({ Name, Email, Team, Supervisor, Status }) => {
             </button>
           </div>
         </div>
+        )}
       </main>
     </>
   );
