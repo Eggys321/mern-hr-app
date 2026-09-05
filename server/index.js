@@ -19,7 +19,15 @@ const app = express();
 
 const port = process.env.PORT || 4040;
 
-const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173", "http://localhost:3000"].filter(Boolean);
+// CLIENT_URL can be a single origin or a comma-separated list (e.g. a
+// Vercel production domain plus its preview-deployment domains). Trailing
+// slashes are stripped since "https://foo.com/" and "https://foo.com" are
+// the same origin but would otherwise fail a strict string match.
+const allowedOrigins = (process.env.CLIENT_URL || "")
+  .split(",")
+  .map((o) => o.trim().replace(/\/$/, ""))
+  .filter(Boolean)
+  .concat(["http://localhost:5173", "http://localhost:3000"]);
 
 app.use(helmet());
 app.use(cors({
@@ -27,6 +35,9 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
+    // Logged so a rejected production origin shows up in the Render logs
+    // instead of just failing silently as a "network error" in the browser.
+    console.warn(`CORS: rejected request from origin "${origin}". Allowed: ${allowedOrigins.join(", ")}`);
     return callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
