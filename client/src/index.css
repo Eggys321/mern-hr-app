@@ -19,6 +19,11 @@ body {
   overflow-x: hidden;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 a {
   text-decoration: none;
   color: rgba(52, 53, 54, 1);

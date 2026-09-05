@@ -62,7 +62,7 @@
       width: 100%;
     }
     .task-board-section-1-div {
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: 1fr;
       justify-content: normal;
     }
   }

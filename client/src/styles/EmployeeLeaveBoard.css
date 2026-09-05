@@ -65,7 +65,7 @@
       border: 3px solid rgba(241, 242, 243, 1);
     }
     .employee-leave-section-1-div {
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: 1fr;
     }
   }
   @media (min-width: 766px) and (max-width: 991px) {
